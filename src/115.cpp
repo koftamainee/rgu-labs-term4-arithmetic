@@ -6,10 +6,7 @@
 #include <iostream>
 
 int main() {
-  std::cout << "Example 1: T(x) = [f1(s1(x))]^k / [f2(s2(x))]^l" << std::endl;
-  std::cout << "f1(u) = u - 1, s1(x) = x^2, k = 2" << std::endl;
-  std::cout << "f2(v) = v + 1, s2(x) = x, l = 1" << std::endl;
-  std::cout << "T(x) = [(x^2 - 1)]^2 / (x + 1)" << std::endl;
+  std::cout << "Example 1:" << std::endl;
 
   Vector f1_coeffs = {-1, 1};
   Vector s1_coeffs = {0, 0, 1};
@@ -26,7 +23,7 @@ int main() {
 
   CompositeRationalFunction T1(f1, s1, k, f2, s2, l);
 
-  std::cout << T1.to_string() << std::endl;
+  std::cout << "T(x) = " << T1.to_string() << std::endl;
 
   Limit lim1_at_1 = T1.limit_at_point(1);
   std::cout << "lim(x->1) T(x) = " << lim1_at_1.to_string() << std::endl;
@@ -43,10 +40,7 @@ int main() {
 
   std::cout << std::endl;
 
-  std::cout << "Example 2: T(x) = [f1(s1(x))]^k / [f2(s2(x))]^l" << std::endl;
-  std::cout << "f1(u) = u, s1(x) = x - 1, k = 1" << std::endl;
-  std::cout << "f2(v) = v, s2(x) = x^2, l = 2" << std::endl;
-  std::cout << "T(x) = (x - 1) / x^4" << std::endl;
+  std::cout << "Example 2: " << std::endl;
 
   Vector f1_coeffs2 = {0, 1};
   Vector s1_coeffs2 = {-1, 1};
@@ -63,7 +57,7 @@ int main() {
 
   CompositeRationalFunction T2(f1_2, s1_2, k2, f2_2, s2_2, l2);
 
-  std::cout << T2.to_string() << std::endl;
+  std::cout << "T(x) = " << T2.to_string() << std::endl;
 
   Limit lim2_at_0 = T2.limit_at_point(0);
   std::cout << "lim(x->0) T(x) = " << lim2_at_0.to_string() << std::endl;
@@ -80,10 +74,7 @@ int main() {
 
   std::cout << std::endl;
 
-  std::cout << "Example 3: Simple composition" << std::endl;
-  std::cout << "f1(u) = 1, s1(x) = x, k = 1" << std::endl;
-  std::cout << "f2(v) = v, s2(x) = x, l = 1" << std::endl;
-  std::cout << "T(x) = 1/x" << std::endl;
+  std::cout << "Example 3" << std::endl;
 
   Vector f1_coeffs3 = {1};
   Vector s1_coeffs3 = {0, 1};
@@ -100,7 +91,7 @@ int main() {
 
   CompositeRationalFunction T3(f1_3, s1_3, k3, f2_3, s2_3, l3);
 
-  std::cout << T3.to_string() << std::endl;
+  std::cout << "T(x) = " << T3.to_string() << std::endl;
 
   Limit lim3_at_0 = T3.limit_at_point(0);
   std::cout << "lim(x->0) T(x) = " << lim3_at_0.to_string() << std::endl;

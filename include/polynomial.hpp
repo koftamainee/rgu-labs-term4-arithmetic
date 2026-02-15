@@ -5,6 +5,8 @@
 #include "vector.h"
 #include <string>
 
+#include "poly_tostring.hpp"
+
 class Polynomial {
 private:
   Vector coeffs_;
@@ -76,9 +78,7 @@ public:
 
   bool is_zero() const { return zero_order() == coeffs_.dimension(); }
 
-  std::string to_string() const {
-    return "Polynomial at x=" + a_.to_decimal() + ": " + coeffs_.to_string();
-  }
+  std::string to_string() const { return poly_tostring(coeffs_, a_); }
 };
 
 #endif

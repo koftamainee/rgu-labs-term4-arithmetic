@@ -15,6 +15,9 @@ int main(void) {
   Matrix M(basis);
   Vector f(f_coeffs);
 
+  std::cout << "Span: " << M.to_string() << std::endl;
+  std::cout << "f(x): " << f.to_string() << std::endl;
+
   std::vector<bigfloat> solution;
   try {
     solution = M.solve_gauss(f_coeffs);

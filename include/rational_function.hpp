@@ -153,8 +153,8 @@ public:
   }
 
   std::string to_string() const {
-    return "R(x) = [" + numerator_.coefficients().to_string() + "] / [" +
-           denominator_.coefficients().to_string() + "]";
+    return "R(x) = [" + numerator_.to_string() + "] / [" +
+           denominator_.to_string() + "]";
   }
 };
 

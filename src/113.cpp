@@ -1,14 +1,13 @@
 #include "bigfloat.h"
-#include "vector.h"
-#include <iostream>
+#include "poly_tostring.hpp"
 
 int main() {
-  Vector coeffs = {1, 2, 3};
+  std::vector<bigfloat> coeffs = {1, 2, 3};
   bigfloat a = 1;
   bigfloat B = 2;
-  size_t n = coeffs.dimension();
+  size_t n = coeffs.size();
 
-  Vector new_coeffs = coeffs;
+  std::vector<bigfloat> new_coeffs = coeffs;
 
   bigfloat h = B - a;
 
@@ -18,7 +17,9 @@ int main() {
     }
   }
 
-  std::cout << "Coefficients in (x-B)^k form: " << new_coeffs.to_string()
+  std::cout << "Poly in (x - a) form: " << poly_tostring(coeffs, a)
             << std::endl;
+  std::cout << "In (x - B) form: " << poly_tostring(new_coeffs, B) << std::endl;
+
   return 0;
 }

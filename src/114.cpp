@@ -5,7 +5,7 @@
 #include <iostream>
 
 int main() {
-  std::cout << "Example 1: R(x) = (x^2 - 1)/(x - 1)" << std::endl;
+  std::cout << "Example 1: " << std::endl;
   Vector f1 = {-1, 0, 1};
   Vector g1 = {-1, 1};
   RationalFunction R1(f1, g1);
@@ -24,7 +24,7 @@ int main() {
 
   std::cout << std::endl;
 
-  std::cout << "Example 2: R(x) = 1/x" << std::endl;
+  std::cout << "Example 2: " << std::endl;
   Vector f2 = {1};
   Vector g2 = {0, 1};
   RationalFunction R2(f2, g2);
@@ -43,7 +43,7 @@ int main() {
 
   std::cout << std::endl;
 
-  std::cout << "Example 3: R(x) = (x^2 - 4)/(x^2 - 2x)" << std::endl;
+  std::cout << "Example 3: " << std::endl;
   Vector f3 = {-4, 0, 1};
   Vector g3 = {0, -2, 1};
   RationalFunction R3(f3, g3);

@@ -37,127 +37,158 @@ public:
   }
 
   bigfloat evaluate(const bigfloat &x) const {
-    bigfloat s1_val = s1_.evaluate(x);
-    bigfloat s2_val = s2_.evaluate(x);
-
-    bigfloat f1_val = f1_.evaluate(s1_val);
-    bigfloat f2_val = f2_.evaluate(s2_val);
-
-    if (f2_val == bigfloat(0)) {
-      throw std::domain_error("Division by zero in f2(s2(x))");
+    bigfloat num_val = s1_.evaluate(x);
+    for (size_t i = 0; i < k_; ++i) {
+      num_val = f1_.evaluate(num_val);
     }
 
-    bigfloat num = pow(f1_val, k_);
-    bigfloat den = pow(f2_val, l_);
+    bigfloat den_val = s2_.evaluate(x);
+    for (size_t i = 0; i < l_; ++i) {
+      den_val = f2_.evaluate(den_val);
+    }
 
-    if (den == bigfloat(0)) {
+    if (den_val == bigfloat(0)) {
       throw std::domain_error("Division by zero");
     }
 
-    return num / den;
+    return num_val / den_val;
   }
 
   Limit limit_at_point(const bigfloat &A) const {
-    bigfloat s1_limit = s1_.evaluate(A);
-    bigfloat s2_limit = s2_.evaluate(A);
-
-    Polynomial f1_at_s1 = f1_.change_expansion_point(s1_limit);
-    Polynomial f2_at_s2 = f2_.change_expansion_point(s2_limit);
-
-    size_t k_f1 = f1_at_s1.zero_order();
-    size_t k_f2 = f2_at_s2.zero_order();
-
-    size_t n_f1 = f1_at_s1.coefficients().dimension();
-    size_t n_f2 = f2_at_s2.coefficients().dimension();
-
-    bool f1_zero = (k_f1 == n_f1);
-    bool f2_zero = (k_f2 == n_f2);
-
-    if (f1_zero && f2_zero && k_ > 0 && l_ > 0) {
-      return {LimitResult::DOES_NOT_EXIST, 0};
-    }
-    if (f1_zero && k_ > 0) {
-      return {LimitResult::FINITE, 0};
-    }
-    if (f2_zero && l_ > 0) {
+    bigfloat s1_val;
+    try {
+      s1_val = s1_.evaluate(A);
+    } catch (...) {
       return {LimitResult::DOES_NOT_EXIST, 0};
     }
 
-    bigfloat f1_limit_val =
-        (k_f1 < n_f1) ? f1_at_s1.coefficients()[k_f1] : bigfloat(0);
-    bigfloat f2_limit_val =
-        (k_f2 < n_f2) ? f2_at_s2.coefficients()[k_f2] : bigfloat(1);
+    bigfloat num_limit = s1_val;
+    for (size_t i = 0; i < k_; ++i) {
+      Polynomial f1_expanded = f1_.change_expansion_point(num_limit);
+      size_t k_f1 = f1_expanded.zero_order();
+      size_t n_f1 = f1_expanded.coefficients().dimension();
 
-    if (k_f1 == 0 && k_f2 == 0) {
-      if (f2_limit_val == bigfloat(0)) {
-        return {LimitResult::DOES_NOT_EXIST, 0};
-      }
-
-      bigfloat num = pow(f1_limit_val, k_);
-      bigfloat den = pow(f2_limit_val, l_);
-
-      return {LimitResult::FINITE, num / den};
-    }
-
-    int effective_zero_order = static_cast<int>(k_f1) * static_cast<int>(k_) -
-                               static_cast<int>(k_f2) * static_cast<int>(l_);
-
-    if (effective_zero_order > 0) {
-      return {LimitResult::FINITE, 0};
-    } else if (effective_zero_order < 0) {
-      if (f1_limit_val == 0 || f2_limit_val == 0) {
-        return {LimitResult::DOES_NOT_EXIST, 0};
-      }
-
-      bigfloat ratio = pow(f1_limit_val, k_) / pow(f2_limit_val, l_);
-      int ratio_sign = sign(ratio);
-
-      if ((-effective_zero_order) % 2 == 0) {
-        if (ratio_sign > 0) {
-          return {LimitResult::PLUS_INFINITY, 0};
-        } else if (ratio_sign < 0) {
-          return {LimitResult::MINUS_INFINITY, 0};
-        } else {
+      if (k_f1 == n_f1) {
+        num_limit = bigfloat(0);
+      } else if (k_f1 == 0) {
+        num_limit = f1_expanded.coefficients()[0];
+      } else {
+        try {
+          num_limit = f1_.evaluate(num_limit);
+        } catch (...) {
           return {LimitResult::DOES_NOT_EXIST, 0};
         }
-      } else {
-        return {LimitResult::DOES_NOT_EXIST, 0};
       }
-    } else {
-      if (f1_limit_val == bigfloat(0) || f2_limit_val == 0) {
-        return {LimitResult::DOES_NOT_EXIST, 0};
-      }
-
-      bigfloat num = pow(f1_limit_val, k_);
-      bigfloat den = pow(f2_limit_val, l_);
-
-      return {LimitResult::FINITE, num / den};
     }
+
+    bigfloat s2_val;
+    try {
+      s2_val = s2_.evaluate(A);
+    } catch (...) {
+      return {LimitResult::DOES_NOT_EXIST, 0};
+    }
+
+    bigfloat den_limit = s2_val;
+    for (size_t i = 0; i < l_; ++i) {
+      Polynomial f2_expanded = f2_.change_expansion_point(den_limit);
+      size_t k_f2 = f2_expanded.zero_order();
+      size_t n_f2 = f2_expanded.coefficients().dimension();
+
+      if (k_f2 == n_f2) {
+        den_limit = bigfloat(0);
+      } else if (k_f2 == 0) {
+        den_limit = f2_expanded.coefficients()[0];
+      } else {
+        try {
+          den_limit = f2_.evaluate(den_limit);
+        } catch (...) {
+          return {LimitResult::DOES_NOT_EXIST, 0};
+        }
+      }
+    }
+
+    if (den_limit == bigfloat(0)) {
+      if (num_limit == bigfloat(0)) {
+        return {LimitResult::DOES_NOT_EXIST, 0};
+      }
+      bigfloat epsilon = bigfloat::DEFAULT_EPS;
+      bigfloat left_val, right_val;
+
+      try {
+        left_val = evaluate(A - epsilon);
+        right_val = evaluate(A + epsilon);
+
+        int left_sign = sign(left_val);
+        int right_sign = sign(right_val);
+
+        if (left_sign == right_sign) {
+          if (left_sign > 0) {
+            return {LimitResult::PLUS_INFINITY, 0};
+          } else if (left_sign < 0) {
+            return {LimitResult::MINUS_INFINITY, 0};
+          }
+        }
+      } catch (...) {
+      }
+
+      return {LimitResult::DOES_NOT_EXIST, 0};
+    }
+
+    return {LimitResult::FINITE, num_limit / den_limit};
   }
 
   Limit limit_at_plus_infinity() const {
-    size_t deg_s1 = s1_.degree();
-    size_t deg_f1 = f1_.degree();
-    size_t deg_s2 = s2_.degree();
-    size_t deg_f2 = f2_.degree();
 
-    bigfloat s1_lead = s1_.coefficients()[deg_s1];
-    bigfloat f1_lead = f1_.coefficients()[deg_f1];
-    bigfloat s2_lead = s2_.coefficients()[deg_s2];
-    bigfloat f2_lead = f2_.coefficients()[deg_f2];
+    int current_deg_num = static_cast<int>(s1_.degree());
+    bigfloat current_lead_num = s1_.coefficients()[s1_.degree()];
 
-    int deg_num = static_cast<int>(deg_f1 * deg_s1 * k_);
-    int deg_den = static_cast<int>(deg_f2 * deg_s2 * l_);
+    for (size_t i = 0; i < k_; ++i) {
+      int deg_f1 = static_cast<int>(f1_.degree());
+      bigfloat lead_f1 = f1_.coefficients()[f1_.degree()];
 
-    bigfloat lead_num = pow(f1_lead * pow(s1_lead, deg_f1), k_);
-    bigfloat lead_den = pow(f2_lead * pow(s2_lead, deg_f2), l_);
+      if (current_deg_num == 0) {
+        current_lead_num = f1_.evaluate(current_lead_num);
+        current_deg_num = 0;
+      } else {
+        int new_deg = deg_f1 * current_deg_num;
+        bigfloat new_lead = lead_f1 * pow(current_lead_num, deg_f1);
 
-    if (deg_num < deg_den) {
+        current_deg_num = new_deg;
+        current_lead_num = new_lead;
+      }
+    }
+
+    int current_deg_den = static_cast<int>(s2_.degree());
+    bigfloat current_lead_den = s2_.coefficients()[s2_.degree()];
+
+    for (size_t i = 0; i < l_; ++i) {
+      int deg_f2 = static_cast<int>(f2_.degree());
+      bigfloat lead_f2 = f2_.coefficients()[f2_.degree()];
+
+      if (current_deg_den == 0) {
+        current_lead_den = f2_.evaluate(current_lead_den);
+        current_deg_den = 0;
+      } else {
+        int new_deg = deg_f2 * current_deg_den;
+        bigfloat new_lead = lead_f2 * pow(current_lead_den, deg_f2);
+
+        current_deg_den = new_deg;
+        current_lead_den = new_lead;
+      }
+    }
+
+    if (current_deg_num < current_deg_den) {
       return {LimitResult::FINITE, 0};
-    } else if (deg_num == deg_den) {
-      return {LimitResult::FINITE, lead_num / lead_den};
+    } else if (current_deg_num == current_deg_den) {
+      if (current_lead_den == bigfloat(0)) {
+        return {LimitResult::DOES_NOT_EXIST, 0};
+      }
+      return {LimitResult::FINITE, current_lead_num / current_lead_den};
     } else {
-      int result_sign = sign(lead_num / lead_den);
+      if (current_lead_den == bigfloat(0) || current_lead_num == bigfloat(0)) {
+        return {LimitResult::DOES_NOT_EXIST, 0};
+      }
+      int result_sign = sign(current_lead_num / current_lead_den);
       if (result_sign > 0) {
         return {LimitResult::PLUS_INFINITY, 0};
       } else if (result_sign < 0) {
@@ -169,38 +200,66 @@ public:
   }
 
   Limit limit_at_minus_infinity() const {
-    size_t deg_s1 = s1_.degree();
-    size_t deg_f1 = f1_.degree();
-    size_t deg_s2 = s2_.degree();
-    size_t deg_f2 = f2_.degree();
 
-    bigfloat s1_lead = s1_.coefficients()[deg_s1];
-    bigfloat f1_lead = f1_.coefficients()[deg_f1];
-    bigfloat s2_lead = s2_.coefficients()[deg_s2];
-    bigfloat f2_lead = f2_.coefficients()[deg_f2];
+    int current_deg_num = static_cast<int>(s1_.degree());
+    bigfloat current_lead_num = s1_.coefficients()[s1_.degree()];
 
-    int deg_num = static_cast<int>(deg_f1 * deg_s1 * k_);
-    int deg_den = static_cast<int>(deg_f2 * deg_s2 * l_);
-
-    int parity_num = (deg_f1 * deg_s1 * k_) % 2;
-    int parity_den = (deg_f2 * deg_s2 * l_) % 2;
-
-    bigfloat lead_num = pow(f1_lead * pow(s1_lead, deg_f1), k_);
-    bigfloat lead_den = pow(f2_lead * pow(s2_lead, deg_f2), l_);
-
-    if (parity_num == 1) {
-      lead_num = -lead_num;
-    }
-    if (parity_den == 1) {
-      lead_den = -lead_den;
+    if (current_deg_num % 2 == 1) {
+      current_lead_num = -current_lead_num;
     }
 
-    if (deg_num < deg_den) {
+    for (size_t i = 0; i < k_; ++i) {
+      int deg_f1 = static_cast<int>(f1_.degree());
+      bigfloat lead_f1 = f1_.coefficients()[f1_.degree()];
+
+      if (current_deg_num == 0) {
+        current_lead_num = f1_.evaluate(current_lead_num);
+        current_deg_num = 0;
+      } else {
+        int new_deg = deg_f1 * current_deg_num;
+
+        bigfloat new_lead = lead_f1 * pow(current_lead_num, deg_f1);
+
+        current_deg_num = new_deg;
+        current_lead_num = new_lead;
+      }
+    }
+
+    int current_deg_den = static_cast<int>(s2_.degree());
+    bigfloat current_lead_den = s2_.coefficients()[s2_.degree()];
+
+    if (current_deg_den % 2 == 1) {
+      current_lead_den = -current_lead_den;
+    }
+
+    for (size_t i = 0; i < l_; ++i) {
+      int deg_f2 = static_cast<int>(f2_.degree());
+      bigfloat lead_f2 = f2_.coefficients()[f2_.degree()];
+
+      if (current_deg_den == 0) {
+        current_lead_den = f2_.evaluate(current_lead_den);
+        current_deg_den = 0;
+      } else {
+        int new_deg = deg_f2 * current_deg_den;
+        bigfloat new_lead = lead_f2 * pow(current_lead_den, deg_f2);
+
+        current_deg_den = new_deg;
+        current_lead_den = new_lead;
+      }
+    }
+
+    if (current_deg_num < current_deg_den) {
       return {LimitResult::FINITE, 0};
-    } else if (deg_num == deg_den) {
-      return {LimitResult::FINITE, lead_num / lead_den};
+    } else if (current_deg_num == current_deg_den) {
+      if (current_lead_den == bigfloat(0)) {
+        return {LimitResult::DOES_NOT_EXIST, 0};
+      }
+      return {LimitResult::FINITE, current_lead_num / current_lead_den};
     } else {
-      int result_sign = sign(lead_num / lead_den);
+      if (current_lead_den == bigfloat(0) || current_lead_num == bigfloat(0)) {
+        return {LimitResult::DOES_NOT_EXIST, 0};
+      }
+      int result_sign = sign(current_lead_num / current_lead_den);
       if (result_sign > 0) {
         return {LimitResult::PLUS_INFINITY, 0};
       } else if (result_sign < 0) {
@@ -212,8 +271,27 @@ public:
   }
 
   std::string to_string() const {
-    return "T(x) = [f1(s1(x))]^" + std::to_string(k_) + " / [f2(s2(x))]^" +
-           std::to_string(l_);
+    std::stringstream out;
+
+    std::string num_str;
+    if (k_ > 1) {
+      num_str = "(" + f1_.to_string() + ")^" + std::to_string(k_) + "{" +
+                s1_.to_string() + "}";
+    } else {
+      num_str = "(" + f1_.to_string() + "){" + s1_.to_string() + "}";
+    }
+
+    std::string den_str;
+    if (l_ > 1) {
+      den_str = "(" + f2_.to_string() + ")^" + std::to_string(l_) + "{" +
+                s2_.to_string() + "}";
+    } else {
+      den_str = "(" + f2_.to_string() + "){" + s2_.to_string() + "}";
+    }
+
+    out << num_str << " / " << den_str;
+
+    return out.str();
   }
 };
 

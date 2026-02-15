@@ -23,6 +23,17 @@ DivResult short_division(const std::vector<int> &u, int base, int divisor) {
 }
 
 int main(void) {
+
+  std::cout
+      << "Task: Perform short division of a number represented in base b.\n";
+  std::cout << "Given a number u = [u0, u1, ..., un-1] in base b and an "
+               "integer divisor v,\n";
+  std::cout << "compute the quotient q and remainder r such that:\n";
+  std::cout << "  u = q * v + r \n";
+  std::cout << "The algorithm processes digits from most significant to least "
+               "significant,\n";
+  std::cout << "updating the remainder at each step.\n\n";
+
   std::vector<int> u = {1, 2, 3, 4};
   int b = 10;
   int v = 7;

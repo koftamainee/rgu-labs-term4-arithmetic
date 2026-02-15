@@ -2,6 +2,15 @@
 #include "poly_tostring.hpp"
 
 int main() {
+
+  std::cout << "Task: Convert a polynomial P(x) from (x - a) form to (x - B) "
+               "form.\n";
+  std::cout
+      << "If P(x) = c_0 + c_1*(x - a) + c_2*(x - a)^2 + ... + c_n*(x - a)^n,\n";
+  std::cout << "compute coefficients d0, d1, ..., dn such that:\n";
+  std::cout
+      << "P(x) = d_0 + d_1*(x - B) + d_2*(x - B)^2 + ... + d_n*(x - B)^n.\n\n";
+
   std::vector<bigfloat> coeffs = {1, 2, 3};
   bigfloat a = 1;
   bigfloat B = 2;

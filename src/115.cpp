@@ -6,6 +6,17 @@
 #include <iostream>
 
 int main() {
+
+  std::cout << "Task: Compute limits of the composite rational function\n";
+  std::cout << "T(x) = f_1 (s_1(x))^k  / f_2 (s_2(x))^l\n";
+  std::cout << "             \n";
+  std::cout << "where f_1, f_2, s_1, s_2 are polynomials and k, l are positive "
+               "integers.\n";
+  std::cout << "The program calculates:\n";
+  std::cout << "1) lim(x -> c) T(x) at finite points c,\n";
+  std::cout << "2) lim(x -> +infinity) T(x),\n";
+  std::cout << "3) lim(x -> -infinity) T(x).\n";
+
   std::cout << "Example 1:" << std::endl;
 
   Vector f1_coeffs = {-1, 1};

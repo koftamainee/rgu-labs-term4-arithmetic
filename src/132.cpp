@@ -35,10 +35,8 @@ public:
           Vector new_coeffs(max_dim);
 
           for (size_t i = 0; i < max_dim; i++) {
-            bigfloat c1 =
-                (i < coeffs_j.dimension()) ? coeffs_j[i] : bigfloat(0);
-            bigfloat c2 =
-                (i < coeffs_jp1.dimension()) ? coeffs_jp1[i] : bigfloat(0);
+            bigfloat c1 = (i < coeffs_j.dimension()) ? coeffs_j[i] : 0;
+            bigfloat c2 = (i < coeffs_jp1.dimension()) ? coeffs_jp1[i] : 0;
             new_coeffs[i] = c1 + c2;
           }
 
@@ -71,7 +69,15 @@ public:
   }
 };
 
-void demonstrate_horner_with_polynomials(void) {
+int main(void) {
+  std::cout << "Task: Perform polynomial composition using Horner's method for "
+               "polynomials with polynomial coefficients.\n";
+  std::cout
+      << "Given a polynomial u(x) = v_0 + v_1*x + v_2*x^2 + ... + v_n*x^n,\n";
+  std::cout << "where each v_i is itself a polynomial in another variable\n";
+  std::cout << "the program computes u(x + x0) using nested Horner "
+               "steps.\n\n";
+
   Polynomial v0(Vector({1, 1}), 0);
   Polynomial v1(Vector({2, 3}), 0);
   Polynomial v2(Vector({1, -1}), 0);
@@ -79,28 +85,19 @@ void demonstrate_horner_with_polynomials(void) {
   std::vector<Polynomial> coeffs = {v0, v1, v2};
   PolynomialOfPolynomials poly_of_poly(coeffs);
 
-  std::cout << "Original polynomial u(x) = v₀ + v₁·x + v₂·x²\n";
+  std::cout << "Original polynomial u(x) = v_0 + v_1*x + v_2·x^2\n";
   std::cout << "where coefficients are polynomials in t:\n";
   poly_of_poly.print("Coefficients");
 
-  bigfloat x0(1);
+  bigfloat x0 = 1;
 
   auto result = poly_of_poly.horner_step(x0);
 
-  std::cout << "Result u(x + 1) = w₀ + w₁·x + w₂·x²:\n";
+  std::cout << "Result u(x + " << x0 << ") = w_0 + w_1·x + w_2·x^2:\n";
   for (size_t i = 0; i < result.size(); i++) {
     std::cout << "  w[" << i << "] = " << result[i].to_string() << "\n";
   }
   std::cout << "\n";
-}
-
-int main(void) {
-  try {
-    demonstrate_horner_with_polynomials();
-  } catch (const std::exception &e) {
-    std::cerr << "Error: " << e.what() << std::endl;
-    return 1;
-  }
 
   return 0;
 }

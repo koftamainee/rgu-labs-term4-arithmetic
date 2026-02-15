@@ -37,12 +37,30 @@ scheme3(const std::vector<std::complex<bigfloat>> &coeffs,
 }
 
 int main(void) {
+
+  std::cout << "Task: Evaluate a polynomial with complex coefficients at a "
+               "complex point z.\n";
+  std::cout << "Given P(z) = c0 + c1*z + c2*z^2 + ... + cn*z^n,\n";
+  std::cout << "the program computes P(z) using two methods:\n";
+  std::cout << "1) Horner's scheme.\n";
+  std::cout << "2) Scheme 3: an alternative method for complex numbers.\n";
+  std::cout
+      << "Both methods produce the same value P(z) in complex arithmetic.\n";
+  std::cout
+      << "Horner method is more simple to implement, but method described at "
+         "scheme 3 is more efficient with large poly degrees\n\n";
+
   std::vector<std::complex<bigfloat>> coeffs = {
       {1, 0}, {2, 0}, {3, 1}, {4, -2}};
   std::complex<bigfloat> z(1.0, 2.0);
 
   std::complex<bigfloat> val_horner = horner(coeffs, z);
   std::complex<bigfloat> val_scheme3 = scheme3(coeffs, z);
+
+  std::complex<bigfloat> a(0);
+
+  std::cout << "P(x) = "
+            << "((4-2i))*x^3 + ((3+1i))*x^2 + ((2))*x + ((1))" << std::endl;
 
   std::cout << "Horner: " << val_horner << "\n";
   std::cout << "Scheme3: " << val_scheme3 << "\n";

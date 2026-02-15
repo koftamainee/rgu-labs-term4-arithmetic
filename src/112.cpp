@@ -3,6 +3,14 @@
 #include <iostream>
 
 int main() {
+
+  std::cout << "Task: Convert a polynomial from standard coefficient form to "
+               "(x - a) form.\n";
+  std::cout << "Given coefficients represent the polynomial:\n";
+  std::cout << "  P(x) = c0 + c1*x + c2*x^2 + ...\n";
+  std::cout << "The program converts it to the form based on (x - a) using "
+               "Horner's scheme.\n\n";
+
   std::vector<bigfloat> coeffs = {1, 2, 3};
   bigfloat a = 5;
 
@@ -14,7 +22,8 @@ int main() {
   }
 
   std::cout << "Initial poly: " << poly_tostring(coeffs, 0) << std::endl;
-  std::cout << "In (x - a) form: " << poly_tostring(new_coeffs, a) << std::endl;
+  std::cout << "Shift value a = " << a << std::endl;
+  std::cout << "Shifted: " << poly_tostring(new_coeffs, a) << std::endl;
 
   return 0;
 }

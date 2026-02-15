@@ -21,6 +21,13 @@ bigfloat evaluate_polynomial_factorial(const Vector &coeffs,
 }
 
 int main(void) {
+  std::cout << "Task: Evaluate a polynomial in factorial powers form.\n";
+  std::cout << "Given a polynomial P(x) = c_0 + c_1*x + c_2*x*(x-1) + ... + "
+               "c_n*x*(x-1)*...*(x-n+1),\n";
+  std::cout << "the program computes P(x) for a given x.\n";
+  std::cout << "This representation is called the factorial powers (or falling "
+               "factorial) form.\n\n";
+
   Vector coeffs({1, 2, 3, 4});
 
   bigfloat x = bigfloat(5);

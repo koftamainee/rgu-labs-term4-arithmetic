@@ -4,7 +4,16 @@
 #include "vector.h"
 #include <iostream>
 
-int main() {
+int main(void) {
+
+  std::cout << "Task: Compute limits of rational functions.\n";
+  std::cout << "Given a rational function R(x) = P(x)/Q(x), where P and Q are "
+               "polynomials,\n";
+  std::cout << "the program calculates:\n";
+  std::cout << "1) lim(x -> c) R(x) at a finite point c,\n";
+  std::cout << "2) lim(x -> +infinity) R(x),\n";
+  std::cout << "3) lim(x -> -infinity) R(x).\n";
+
   std::cout << "Example 1: " << std::endl;
   Vector f1 = {-1, 0, 1};
   Vector g1 = {-1, 1};

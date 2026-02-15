@@ -7,6 +7,11 @@
 
 int main(void) {
 
+  std::cout << "Task: Determine if the vector f(x) lies in the span of given "
+               "basis vectors.\n";
+  std::cout << "If it does, the program will compute and display the "
+               "coefficients.\n\n";
+
   std::vector<std::vector<bigfloat>> basis = {
       {15, 0, 0}, {0, 42, 0}, {0, 0, 727}};
 

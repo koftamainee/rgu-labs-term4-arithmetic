@@ -71,10 +71,10 @@ public:
   }
 };
 
-void demonstrate_horner_with_polynomials() {
-  Polynomial v0(Vector({bigfloat(1), bigfloat(1)}), bigfloat(0));
-  Polynomial v1(Vector({bigfloat(2), bigfloat(3)}), bigfloat(0));
-  Polynomial v2(Vector({bigfloat(1), bigfloat(-1)}), bigfloat(0));
+void demonstrate_horner_with_polynomials(void) {
+  Polynomial v0(Vector({1, 1}), 0);
+  Polynomial v1(Vector({2, 3}), 0);
+  Polynomial v2(Vector({1, -1}), 0);
 
   std::vector<Polynomial> coeffs = {v0, v1, v2};
   PolynomialOfPolynomials poly_of_poly(coeffs);
@@ -94,7 +94,7 @@ void demonstrate_horner_with_polynomials() {
   std::cout << "\n";
 }
 
-int main() {
+int main(void) {
   try {
     demonstrate_horner_with_polynomials();
   } catch (const std::exception &e) {

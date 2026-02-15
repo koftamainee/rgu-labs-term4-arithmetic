@@ -36,7 +36,7 @@ scheme3(const std::vector<std::complex<bigfloat>> &coeffs,
   return a * z + b;
 }
 
-int main() {
+int main(void) {
   std::vector<std::complex<bigfloat>> coeffs = {
       {1, 0}, {2, 0}, {3, 1}, {4, -2}};
   std::complex<bigfloat> z(1.0, 2.0);

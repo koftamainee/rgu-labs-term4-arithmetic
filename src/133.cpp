@@ -55,7 +55,7 @@ bigfloat poly2d_eval(const std::vector<std::vector<bigfloat>> &coeffs,
   return result;
 }
 
-int main() {
+int main(void) {
 
   std::vector<std::vector<bigfloat>> coeffs = {
       {1, 3, 6, 10}, {2, 5, 9, 0}, {4, 8, 0, 0}, {7, 0, 0, 0}};

@@ -5,13 +5,14 @@
 bigfloat evaluate_polynomial_factorial(const Vector &coeffs,
                                        const bigfloat &x) {
   size_t n = coeffs.dimension();
-  if (n == 0)
+  if (n == 0) {
     return bigfloat(0);
+  }
 
   bigfloat res = coeffs[0];
   bigfloat xp = 1;
 
-  for (size_t k = 1; k < n; ++k) {
+  for (size_t k = 1; k < n; k++) {
     xp *= (x - (k - 1));
     res += coeffs[k] * xp;
   }
@@ -19,12 +20,8 @@ bigfloat evaluate_polynomial_factorial(const Vector &coeffs,
   return res;
 }
 
-int main() {
-  Vector coeffs(4);
-  coeffs[0] = bigfloat(1);
-  coeffs[1] = bigfloat(2);
-  coeffs[2] = bigfloat(3);
-  coeffs[3] = bigfloat(4);
+int main(void) {
+  Vector coeffs({1, 2, 3, 4});
 
   bigfloat x = bigfloat(5);
 

@@ -75,8 +75,7 @@ int main(void) {
   std::cout
       << "Given a polynomial u(x) = v_0 + v_1*x + v_2*x^2 + ... + v_n*x^n,\n";
   std::cout << "where each v_i is itself a polynomial in another variable\n";
-  std::cout << "the program computes u(x + x0) using nested Horner "
-               "steps.\n\n";
+  std::cout << "the program computes u(x + x0) using Horner scheme\n\n";
 
   Polynomial v0(Vector({1, 1}), 0);
   Polynomial v1(Vector({2, 3}), 0);

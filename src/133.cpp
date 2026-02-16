@@ -76,27 +76,5 @@ int main() {
   std::cout << "Polynomial of two variables with terms i + j < n, n = " << n
             << "\n\n";
 
-  std::cout << "Horner-like evaluation:\n";
-  std::cout << "1) For each fixed j, compute p_j(x) = sum_{i=0}^{n-1-j} "
-               "u[i][j] * x^i using 1D Horner:\n";
-  std::cout << "   - Start from highest i, multiply accumulated value by x and "
-               "add coefficient\n";
-  std::cout << "   - This avoids computing x^i explicitly\n\n";
-
-  std::cout << "2) Combine all p_j(x) in y using Horner:\n";
-  std::cout << "   - Start from largest j, multiply accumulated value by y and "
-               "add p_j(x)\n";
-  std::cout << "   - This avoids computing y^j explicitly\n\n";
-
-  std::cout
-      << "Number of terms (i + j < n): sum_{i=0}^{n-1} (n - i) = n*(n+1)/2\n";
-  std::cout << "Additions in Horner evaluation: one per operation inside "
-               "Horner = n*(n+1)/2 (for x) + (n-1) (for y)\n";
-  std::cout << "Multiplications in Horner evaluation:\n";
-  std::cout << "  - For each p_j(x): n - 1 - j multiplications\n";
-  std::cout << "  - Combining in y: n - 1 multiplications\n";
-  std::cout << "  Total multiplications = sum_{j=0}^{n-1} (n - 1 - j) + (n - "
-               "1) = n*(n-1)/2 + (n-1) = n*(n+1)/2 - 1\n\n";
-
   return 0;
 }

@@ -93,7 +93,7 @@ int main(void) {
 
   auto result = poly_of_poly.horner_step(x0);
 
-  std::cout << "Result u(x + " << x0 << ") = w_0 + w_1·x + w_2·x^2:\n";
+  std::cout << "Result u(x + " << x0 << ") = w_0 + w_1·x + w_2*x^2:\n";
   for (size_t i = 0; i < result.size(); i++) {
     std::cout << "  w[" << i << "] = " << result[i].to_string() << "\n";
   }

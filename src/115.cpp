@@ -6,12 +6,11 @@
 #include <iostream>
 
 int main() {
-
   std::cout << "Task: Compute limits of the composite rational function\n";
   std::cout << "T(x) = f_1 (s_1(x))^k  / f_2 (s_2(x))^l\n";
   std::cout << "             \n";
   std::cout << "where f_1, f_2, s_1, s_2 are polynomials and k, l are positive "
-               "integers.\n";
+      "integers.\n";
   std::cout << "The program calculates:\n";
   std::cout << "1) lim(x -> c) T(x) at finite points c,\n";
   std::cout << "2) lim(x -> +infinity) T(x),\n";
@@ -25,7 +24,7 @@ int main() {
 
   Vector f2_coeffs = {1, 1};
   Vector s2_coeffs = {0, 1};
-  size_t l = 1;
+  size_t l = 2;
 
   Polynomial f1(f1_coeffs, 0);
   Polynomial s1(s1_coeffs, 0);
@@ -39,15 +38,12 @@ int main() {
   Limit lim1_at_1 = T1.limit_at_point(1);
   std::cout << "lim(x->1) T(x) = " << lim1_at_1.to_string() << std::endl;
 
-  Limit lim1_at_neg1 = T1.limit_at_point(-1);
-  std::cout << "lim(x->-1) T(x) = " << lim1_at_neg1.to_string() << std::endl;
-
   Limit lim1_plus_inf = T1.limit_at_plus_infinity();
   std::cout << "lim(x->+inf) T(x) = " << lim1_plus_inf.to_string() << std::endl;
 
   Limit lim1_minus_inf = T1.limit_at_minus_infinity();
   std::cout << "lim(x->-inf) T(x) = " << lim1_minus_inf.to_string()
-            << std::endl;
+      << std::endl;
 
   std::cout << std::endl;
 
@@ -81,7 +77,7 @@ int main() {
 
   Limit lim2_minus_inf = T2.limit_at_minus_infinity();
   std::cout << "lim(x->-inf) T(x) = " << lim2_minus_inf.to_string()
-            << std::endl;
+      << std::endl;
 
   std::cout << std::endl;
 
@@ -112,7 +108,7 @@ int main() {
 
   Limit lim3_minus_inf = T3.limit_at_minus_infinity();
   std::cout << "lim(x->-inf) T(x) = " << lim3_minus_inf.to_string()
-            << std::endl;
+      << std::endl;
 
   return 0;
 }

@@ -30,7 +30,7 @@ public:
   CompositeRationalFunction(const Polynomial &f1, const Polynomial &s1,
                             size_t k, const Polynomial &f2,
                             const Polynomial &s2, size_t l)
-      : f1_(f1), s1_(s1), k_(k), f2_(f2), s2_(s2), l_(l) {
+    : f1_(f1), s1_(s1), k_(k), f2_(f2), s2_(s2), l_(l) {
     if (f2_.is_zero() || s2_.is_zero()) {
       throw std::invalid_argument("Denominator polynomials cannot be zero");
     }
@@ -56,11 +56,7 @@ public:
 
   Limit limit_at_point(const bigfloat &A) const {
     bigfloat s1_val;
-    try {
-      s1_val = s1_.evaluate(A);
-    } catch (...) {
-      return {LimitResult::DOES_NOT_EXIST, 0};
-    }
+    s1_val = s1_.evaluate(A);
 
     bigfloat num_limit = s1_val;
     for (size_t i = 0; i < k_; ++i) {
@@ -73,20 +69,12 @@ public:
       } else if (k_f1 == 0) {
         num_limit = f1_expanded.coefficients()[0];
       } else {
-        try {
-          num_limit = f1_.evaluate(num_limit);
-        } catch (...) {
-          return {LimitResult::DOES_NOT_EXIST, 0};
-        }
+        num_limit = f1_expanded.evaluate(num_limit);
       }
     }
 
     bigfloat s2_val;
-    try {
-      s2_val = s2_.evaluate(A);
-    } catch (...) {
-      return {LimitResult::DOES_NOT_EXIST, 0};
-    }
+    s2_val = s2_.evaluate(A);
 
     bigfloat den_limit = s2_val;
     for (size_t i = 0; i < l_; ++i) {
@@ -99,11 +87,7 @@ public:
       } else if (k_f2 == 0) {
         den_limit = f2_expanded.coefficients()[0];
       } else {
-        try {
-          den_limit = f2_.evaluate(den_limit);
-        } catch (...) {
-          return {LimitResult::DOES_NOT_EXIST, 0};
-        }
+        den_limit = f2_expanded.evaluate(den_limit);
       }
     }
 
@@ -134,11 +118,12 @@ public:
       return {LimitResult::DOES_NOT_EXIST, 0};
     }
 
+    std::cout << num_limit << ", " << den_limit << std::endl;
+
     return {LimitResult::FINITE, num_limit / den_limit};
   }
 
   Limit limit_at_plus_infinity() const {
-
     int current_deg_num = static_cast<int>(s1_.degree());
     bigfloat current_lead_num = s1_.coefficients()[s1_.degree()];
 
@@ -200,7 +185,6 @@ public:
   }
 
   Limit limit_at_minus_infinity() const {
-
     int current_deg_num = static_cast<int>(s1_.degree());
     bigfloat current_lead_num = s1_.coefficients()[s1_.degree()];
 

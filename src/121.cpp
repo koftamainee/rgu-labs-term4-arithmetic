@@ -13,9 +13,16 @@ DivResult short_division(const std::vector<int> &u, int base, int divisor) {
   std::vector<int> quotient(n);
   int remainder = 0;
 
+  int shift = 0;
+
   for (size_t i = 0; i < n; ++i) {
     int temp = remainder * base + u[i];
-    quotient[i] = temp / divisor;
+    auto div_res = temp / divisor;
+    if (div_res != 0) {
+      quotient[i - shift] = temp / divisor;
+    } else {
+      shift++;
+    }
     remainder = temp % divisor;
   }
 
@@ -34,7 +41,11 @@ int main(void) {
                "significant,\n";
   std::cout << "updating the remainder at each step.\n\n";
 
-  std::vector<int> u = {1, 2, 3, 4};
+  std::vector<int> u(250);
+  for (int i = 0; i < 250; i++) {
+    u[i] = i + 1;
+  }
+
   int b = 10;
   int v = 7;
 

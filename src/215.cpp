@@ -10,7 +10,7 @@ int main() {
     GF2n::elem a;
   };
 
-  const Test tests[] = {
+  constexpr Test tests[] = {
     {4, 0b10011, 0b1011},   // GF(2^4), x^4 + x + 1
     {4, 0b10011, 0b0111},   // GF(2^4), x^4 + x + 1
     {5, 0b100101, 0b10111}, // GF(2^5), x^5 + x^2 + 1

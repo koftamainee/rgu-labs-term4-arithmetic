@@ -6,6 +6,7 @@
 #include "polynomial.hpp"
 #include "vector.h"
 #include <stdexcept>
+#include <utility>
 
 class CompositeRationalFunction {
 private:
@@ -26,26 +27,30 @@ private:
     return 0;
   }
 
+  static bigfloat power(const bigfloat &base, size_t exp) {
+    bigfloat result(1);
+    for (size_t i = 0; i < exp; ++i) {
+      result = result * base;
+    }
+    return result;
+  }
+
 public:
-  CompositeRationalFunction(const Polynomial &f1, const Polynomial &s1,
-                            size_t k, const Polynomial &f2,
-                            const Polynomial &s2, size_t l)
-    : f1_(f1), s1_(s1), k_(k), f2_(f2), s2_(s2), l_(l) {
+  CompositeRationalFunction(Polynomial f1, Polynomial s1,
+                            size_t k, Polynomial f2,
+                            Polynomial s2, size_t l)
+    : f1_(std::move(f1)), s1_(std::move(s1)), k_(k), f2_(std::move(f2)), s2_(std::move(s2)), l_(l) {
     if (f2_.is_zero() || s2_.is_zero()) {
       throw std::invalid_argument("Denominator polynomials cannot be zero");
     }
   }
 
   bigfloat evaluate(const bigfloat &x) const {
-    bigfloat num_val = s1_.evaluate(x);
-    for (size_t i = 0; i < k_; ++i) {
-      num_val = f1_.evaluate(num_val);
-    }
+    bigfloat num_val = f1_.evaluate(s1_.evaluate(x));
+    num_val = power(num_val, k_);
 
-    bigfloat den_val = s2_.evaluate(x);
-    for (size_t i = 0; i < l_; ++i) {
-      den_val = f2_.evaluate(den_val);
-    }
+    bigfloat den_val = f2_.evaluate(s2_.evaluate(x));
+    den_val = power(den_val, l_);
 
     if (den_val == bigfloat(0)) {
       throw std::domain_error("Division by zero");
@@ -55,41 +60,13 @@ public:
   }
 
   Limit limit_at_point(const bigfloat &A) const {
-    bigfloat s1_val;
-    s1_val = s1_.evaluate(A);
+    bigfloat s1_val = s1_.evaluate(A);
+    bigfloat num_limit = f1_.evaluate(s1_val);
+    num_limit = power(num_limit, k_);
 
-    bigfloat num_limit = s1_val;
-    for (size_t i = 0; i < k_; ++i) {
-      Polynomial f1_expanded = f1_.change_expansion_point(num_limit);
-      size_t k_f1 = f1_expanded.zero_order();
-      size_t n_f1 = f1_expanded.coefficients().dimension();
-
-      if (k_f1 == n_f1) {
-        num_limit = bigfloat(0);
-      } else if (k_f1 == 0) {
-        num_limit = f1_expanded.coefficients()[0];
-      } else {
-        num_limit = f1_expanded.evaluate(num_limit);
-      }
-    }
-
-    bigfloat s2_val;
-    s2_val = s2_.evaluate(A);
-
-    bigfloat den_limit = s2_val;
-    for (size_t i = 0; i < l_; ++i) {
-      Polynomial f2_expanded = f2_.change_expansion_point(den_limit);
-      size_t k_f2 = f2_expanded.zero_order();
-      size_t n_f2 = f2_expanded.coefficients().dimension();
-
-      if (k_f2 == n_f2) {
-        den_limit = bigfloat(0);
-      } else if (k_f2 == 0) {
-        den_limit = f2_expanded.coefficients()[0];
-      } else {
-        den_limit = f2_expanded.evaluate(den_limit);
-      }
-    }
+    bigfloat s2_val = s2_.evaluate(A);
+    bigfloat den_limit = f2_.evaluate(s2_val);
+    den_limit = power(den_limit, l_);
 
     if (den_limit == bigfloat(0)) {
       if (num_limit == bigfloat(0)) {
@@ -118,49 +95,49 @@ public:
       return {LimitResult::DOES_NOT_EXIST, 0};
     }
 
-    std::cout << num_limit << ", " << den_limit << std::endl;
-
     return {LimitResult::FINITE, num_limit / den_limit};
   }
 
   Limit limit_at_plus_infinity() const {
-    int current_deg_num = static_cast<int>(s1_.degree());
-    bigfloat current_lead_num = s1_.coefficients()[s1_.degree()];
+    const int deg_s1 = static_cast<int>(s1_.degree());
+    const bigfloat lead_s1 = s1_.coefficients()[s1_.degree()];
 
-    for (size_t i = 0; i < k_; ++i) {
-      int deg_f1 = static_cast<int>(f1_.degree());
-      bigfloat lead_f1 = f1_.coefficients()[f1_.degree()];
+    const int deg_f1 = static_cast<int>(f1_.degree());
+    const bigfloat lead_f1 = f1_.coefficients()[f1_.degree()];
 
-      if (current_deg_num == 0) {
-        current_lead_num = f1_.evaluate(current_lead_num);
-        current_deg_num = 0;
-      } else {
-        int new_deg = deg_f1 * current_deg_num;
-        bigfloat new_lead = lead_f1 * pow(current_lead_num, deg_f1);
+    int current_deg_num;
+    bigfloat current_lead_num;
 
-        current_deg_num = new_deg;
-        current_lead_num = new_lead;
-      }
+    if (deg_s1 == 0) {
+      current_lead_num = f1_.evaluate(lead_s1);
+      current_deg_num = 0;
+    } else {
+      current_deg_num = deg_f1 * deg_s1;
+      current_lead_num = lead_f1 * pow(lead_s1, deg_f1);
     }
 
-    int current_deg_den = static_cast<int>(s2_.degree());
-    bigfloat current_lead_den = s2_.coefficients()[s2_.degree()];
+    current_deg_num = current_deg_num * static_cast<int>(k_);
+    current_lead_num = pow(current_lead_num, static_cast<int>(k_));
 
-    for (size_t i = 0; i < l_; ++i) {
-      int deg_f2 = static_cast<int>(f2_.degree());
-      bigfloat lead_f2 = f2_.coefficients()[f2_.degree()];
+    const int deg_s2 = static_cast<int>(s2_.degree());
+    const bigfloat lead_s2 = s2_.coefficients()[s2_.degree()];
 
-      if (current_deg_den == 0) {
-        current_lead_den = f2_.evaluate(current_lead_den);
-        current_deg_den = 0;
-      } else {
-        int new_deg = deg_f2 * current_deg_den;
-        bigfloat new_lead = lead_f2 * pow(current_lead_den, deg_f2);
+    const int deg_f2 = static_cast<int>(f2_.degree());
+    const bigfloat lead_f2 = f2_.coefficients()[f2_.degree()];
 
-        current_deg_den = new_deg;
-        current_lead_den = new_lead;
-      }
+    int current_deg_den;
+    bigfloat current_lead_den;
+
+    if (deg_s2 == 0) {
+      current_lead_den = f2_.evaluate(lead_s2);
+      current_deg_den = 0;
+    } else {
+      current_deg_den = deg_f2 * deg_s2;
+      current_lead_den = lead_f2 * pow(lead_s2, deg_f2);
     }
+
+    current_deg_den = current_deg_den * static_cast<int>(l_);
+    current_lead_den = pow(current_lead_den, static_cast<int>(l_));
 
     if (current_deg_num < current_deg_den) {
       return {LimitResult::FINITE, 0};
@@ -173,7 +150,7 @@ public:
       if (current_lead_den == bigfloat(0) || current_lead_num == bigfloat(0)) {
         return {LimitResult::DOES_NOT_EXIST, 0};
       }
-      int result_sign = sign(current_lead_num / current_lead_den);
+      const int result_sign = sign(current_lead_num / current_lead_den);
       if (result_sign > 0) {
         return {LimitResult::PLUS_INFINITY, 0};
       } else if (result_sign < 0) {
@@ -185,52 +162,53 @@ public:
   }
 
   Limit limit_at_minus_infinity() const {
-    int current_deg_num = static_cast<int>(s1_.degree());
-    bigfloat current_lead_num = s1_.coefficients()[s1_.degree()];
+    const int deg_s1 = static_cast<int>(s1_.degree());
+    bigfloat lead_s1 = s1_.coefficients()[s1_.degree()];
 
-    if (current_deg_num % 2 == 1) {
-      current_lead_num = -current_lead_num;
+    if (deg_s1 % 2 == 1) {
+      lead_s1 = -lead_s1;
     }
 
-    for (size_t i = 0; i < k_; ++i) {
-      int deg_f1 = static_cast<int>(f1_.degree());
-      bigfloat lead_f1 = f1_.coefficients()[f1_.degree()];
+    const int deg_f1 = static_cast<int>(f1_.degree());
+    const bigfloat lead_f1 = f1_.coefficients()[f1_.degree()];
 
-      if (current_deg_num == 0) {
-        current_lead_num = f1_.evaluate(current_lead_num);
-        current_deg_num = 0;
-      } else {
-        int new_deg = deg_f1 * current_deg_num;
+    int current_deg_num;
+    bigfloat current_lead_num;
 
-        bigfloat new_lead = lead_f1 * pow(current_lead_num, deg_f1);
-
-        current_deg_num = new_deg;
-        current_lead_num = new_lead;
-      }
+    if (deg_s1 == 0) {
+      current_lead_num = f1_.evaluate(lead_s1);
+      current_deg_num = 0;
+    } else {
+      current_deg_num = deg_f1 * deg_s1;
+      current_lead_num = lead_f1 * pow(lead_s1, deg_f1);
     }
 
-    int current_deg_den = static_cast<int>(s2_.degree());
-    bigfloat current_lead_den = s2_.coefficients()[s2_.degree()];
+    current_deg_num = current_deg_num * static_cast<int>(k_);
+    current_lead_num = pow(current_lead_num, static_cast<int>(k_));
 
-    if (current_deg_den % 2 == 1) {
-      current_lead_den = -current_lead_den;
+    const int deg_s2 = static_cast<int>(s2_.degree());
+    bigfloat lead_s2 = s2_.coefficients()[s2_.degree()];
+
+    if (deg_s2 % 2 == 1) {
+      lead_s2 = -lead_s2;
     }
 
-    for (size_t i = 0; i < l_; ++i) {
-      int deg_f2 = static_cast<int>(f2_.degree());
-      bigfloat lead_f2 = f2_.coefficients()[f2_.degree()];
+    int deg_f2 = static_cast<int>(f2_.degree());
+    bigfloat lead_f2 = f2_.coefficients()[f2_.degree()];
 
-      if (current_deg_den == 0) {
-        current_lead_den = f2_.evaluate(current_lead_den);
-        current_deg_den = 0;
-      } else {
-        int new_deg = deg_f2 * current_deg_den;
-        bigfloat new_lead = lead_f2 * pow(current_lead_den, deg_f2);
+    int current_deg_den;
+    bigfloat current_lead_den;
 
-        current_deg_den = new_deg;
-        current_lead_den = new_lead;
-      }
+    if (deg_s2 == 0) {
+      current_lead_den = f2_.evaluate(lead_s2);
+      current_deg_den = 0;
+    } else {
+      current_deg_den = deg_f2 * deg_s2;
+      current_lead_den = lead_f2 * pow(lead_s2, deg_f2);
     }
+
+    current_deg_den = current_deg_den * static_cast<int>(l_);
+    current_lead_den = pow(current_lead_den, static_cast<int>(l_));
 
     if (current_deg_num < current_deg_den) {
       return {LimitResult::FINITE, 0};
@@ -243,7 +221,7 @@ public:
       if (current_lead_den == bigfloat(0) || current_lead_num == bigfloat(0)) {
         return {LimitResult::DOES_NOT_EXIST, 0};
       }
-      int result_sign = sign(current_lead_num / current_lead_den);
+      const int result_sign = sign(current_lead_num / current_lead_den);
       if (result_sign > 0) {
         return {LimitResult::PLUS_INFINITY, 0};
       } else if (result_sign < 0) {

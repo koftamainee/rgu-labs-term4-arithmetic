@@ -78,6 +78,70 @@ public:
 
   bool is_zero() const { return zero_order() == coeffs_.dimension(); }
 
+  Polynomial operator+(const Polynomial& other) const {
+    const size_t n = std::max(coeffs_.dimension(), other.coeffs_.dimension());
+    std::vector<bigfloat> result(n, bigfloat(0));
+    for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i] += coeffs_[i];
+    for (size_t i = 0; i < other.coeffs_.dimension(); ++i) result[i] += other.coeffs_[i];
+    return Polynomial(Vector(result));
+  }
+
+  Polynomial operator-(const Polynomial& other) const {
+    const size_t n = std::max(coeffs_.dimension(), other.coeffs_.dimension());
+    std::vector<bigfloat> result(n, bigfloat(0));
+    for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i] += coeffs_[i];
+    for (size_t i = 0; i < other.coeffs_.dimension(); ++i) result[i] -= other.coeffs_[i];
+    return Polynomial(Vector(result));
+  }
+
+  Polynomial operator*(const bigfloat& scalar) const {
+    std::vector<bigfloat> result(coeffs_.dimension());
+    for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i] = coeffs_[i] * scalar;
+    return Polynomial(Vector(result));
+  }
+
+  Polynomial operator*(const Polynomial& other) const {
+    const size_t fn = coeffs_.dimension();
+    const size_t gn = other.coeffs_.dimension();
+    if (fn == 0 || gn == 0)
+      return Polynomial(Vector(std::vector<bigfloat>{bigfloat(0)}));
+    std::vector<bigfloat> result(fn + gn - 1, bigfloat(0));
+    for (size_t i = 0; i < fn; ++i)
+      for (size_t j = 0; j < gn; ++j)
+        result[i + j] += coeffs_[i] * other.coeffs_[j];
+    return Polynomial(Vector(result));
+  }
+
+  Polynomial rem_xn_minus_1(const size_t n) const {
+    std::vector<bigfloat> result(n, bigfloat(0));
+    for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i % n] += coeffs_[i];
+    return Polynomial(Vector(result));
+  }
+
+  Polynomial rem_xn_plus_1(const size_t n) const {
+    std::vector<bigfloat> result(n, bigfloat(0));
+    for (size_t i = 0; i < coeffs_.dimension(); ++i) {
+      if ((i / n) % 2 == 0) result[i % n] += coeffs_[i];
+      else                   result[i % n] -= coeffs_[i];
+    }
+    return Polynomial(Vector(result));
+  }
+
+  Polynomial substitute_wx(const std::vector<bigfloat>& omega_powers) const {
+    const size_t n = coeffs_.dimension();
+    std::vector<bigfloat> result(n);
+    for (size_t i = 0; i < n; ++i)
+      result[i] = coeffs_[i] * omega_powers[i % omega_powers.size()];
+    return Polynomial(Vector(result));
+  }
+
+  Polynomial first_n_coeffs(const size_t n) const {
+    std::vector<bigfloat> result(n, bigfloat(0));
+    for (size_t i = 0; i < n && i < coeffs_.dimension(); ++i)
+      result[i] = coeffs_[i];
+    return Polynomial(Vector(result));
+  }
+
   std::string to_string() const { return poly_tostring(coeffs_, a_); }
 };
 

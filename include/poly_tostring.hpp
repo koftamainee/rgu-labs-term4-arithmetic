@@ -1,7 +1,7 @@
 #ifndef POLY_TOSTRING_HPP
 #define POLY_TOSTRING_HPP
 
-#include "bigfloat.h"
+#include "bigmath/bigfloat.hpp"
 #include "vector.h"
 #include <complex>
 #include <sstream>

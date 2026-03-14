@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "bigfloat.h"
+#include "bigmath.hpp"
 
 class Vector {
 private:
@@ -17,7 +17,6 @@ public:
   explicit Vector(size_t dimension);
   Vector(const std::vector<bigfloat> &components);
   Vector(std::initializer_list<bigfloat> init);
-  Vector(std::string const &str);
 
   Vector(const Vector &) = default;
   Vector(Vector &&) noexcept = default;
@@ -60,10 +59,6 @@ public:
                                     const Vector &c);
   static bigfloat triple_product_7d(const Vector &a, const Vector &b,
                                     const Vector &c);
-
-  static std::vector<Vector>
-  gram_schmidt_process(const std::vector<Vector> &vectors,
-                       const bigfloat &EPS = bigfloat::DEFAULT_EPS);
 
   bool is_zero() const;
   bool is_orthogonal_to(const Vector &other) const;

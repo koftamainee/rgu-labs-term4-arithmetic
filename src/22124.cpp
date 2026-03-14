@@ -1,6 +1,6 @@
 #include <iostream>
 #include <complex>
-#include "bigfloat.h"
+#include "bigmath/bigfloat.hpp"
 #include "poly_tostring.hpp"
 
 using CBF = std::complex<bigfloat>;

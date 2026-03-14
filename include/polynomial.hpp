@@ -1,7 +1,7 @@
 #ifndef POLYNOMIAL_HPP
 #define POLYNOMIAL_HPP
 
-#include "bigfloat.h"
+#include "bigmath/bigfloat.hpp"
 #include "vector.h"
 #include <string>
 

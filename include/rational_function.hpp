@@ -1,7 +1,7 @@
 #ifndef RATIONAL_FUNCTION_HPP
 #define RATIONAL_FUNCTION_HPP
 
-#include "bigfloat.h"
+#include "bigmath/bigfloat.hpp"
 #include "limit.hpp"
 #include "polynomial.hpp"
 #include "vector.h"

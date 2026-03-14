@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 
-#include "bigfloat.h"
+#include "bigmath/bigfloat.hpp"
 #include "vector.h"
 
 class Matrix {
  private:
   std::vector<std::vector<bigfloat>> data_;
-  size_t rows_, cols_;
+  size_t rows_{}, cols_{};
 
   void check_same_size(const Matrix& other, const std::string& op) const;
   void check_square(const std::string& op) const;
@@ -18,7 +18,6 @@ class Matrix {
   Matrix() = default;
   Matrix(size_t rows, size_t cols);
   Matrix(std::vector<std::vector<bigfloat>> const& data);
-  Matrix(std::string const& str);
 
   size_t rows() const noexcept;
   size_t cols() const noexcept;
@@ -52,9 +51,6 @@ class Matrix {
 
   size_t rank() const;
 
-  Vector nullspace_vector(const bigfloat& EPS) const;
-
-  Vector operator*(const Vector& vec) const;
 
   static size_t span_dimension(
       const std::vector<std::vector<bigfloat>>& vectors);

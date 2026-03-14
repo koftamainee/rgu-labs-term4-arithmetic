@@ -1,7 +1,7 @@
 #ifndef LIMIT_HPP
 #define LIMIT_HPP
 
-#include "bigfloat.h"
+#include "bigmath/bigfloat.hpp"
 #include <string>
 
 enum class LimitResult {

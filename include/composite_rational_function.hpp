@@ -1,7 +1,7 @@
 #ifndef COMPOSITE_RATIONAL_FUNCTION_HPP
 #define COMPOSITE_RATIONAL_FUNCTION_HPP
 
-#include "bigfloat.h"
+#include "bigmath/bigfloat.hpp"
 #include "limit.hpp"
 #include "polynomial.hpp"
 #include "vector.h"
@@ -113,11 +113,11 @@ public:
       current_deg_num = 0;
     } else {
       current_deg_num = deg_f1 * deg_s1;
-      current_lead_num = lead_f1 * pow(lead_s1, deg_f1);
+      current_lead_num = lead_f1 * pow(lead_s1, bigint(deg_f1));
     }
 
     current_deg_num = current_deg_num * static_cast<int>(k_);
-    current_lead_num = pow(current_lead_num, static_cast<int>(k_));
+    current_lead_num = pow(current_lead_num, static_cast<bigint>(k_));
 
     const int deg_s2 = static_cast<int>(s2_.degree());
     const bigfloat lead_s2 = s2_.coefficients()[s2_.degree()];
@@ -133,11 +133,11 @@ public:
       current_deg_den = 0;
     } else {
       current_deg_den = deg_f2 * deg_s2;
-      current_lead_den = lead_f2 * pow(lead_s2, deg_f2);
+      current_lead_den = lead_f2 * pow(lead_s2, bigint(deg_f2));
     }
 
     current_deg_den = current_deg_den * static_cast<int>(l_);
-    current_lead_den = pow(current_lead_den, static_cast<int>(l_));
+    current_lead_den = pow(current_lead_den, static_cast<bigint>(l_));
 
     if (current_deg_num < current_deg_den) {
       return {LimitResult::FINITE, 0};
@@ -180,11 +180,11 @@ public:
       current_deg_num = 0;
     } else {
       current_deg_num = deg_f1 * deg_s1;
-      current_lead_num = lead_f1 * pow(lead_s1, deg_f1);
+      current_lead_num = lead_f1 * pow(lead_s1, bigint(deg_f1));
     }
 
     current_deg_num = current_deg_num * static_cast<int>(k_);
-    current_lead_num = pow(current_lead_num, static_cast<int>(k_));
+    current_lead_num = pow(current_lead_num, static_cast<bigint>(k_));
 
     const int deg_s2 = static_cast<int>(s2_.degree());
     bigfloat lead_s2 = s2_.coefficients()[s2_.degree()];
@@ -204,11 +204,11 @@ public:
       current_deg_den = 0;
     } else {
       current_deg_den = deg_f2 * deg_s2;
-      current_lead_den = lead_f2 * pow(lead_s2, deg_f2);
+      current_lead_den = lead_f2 * pow(lead_s2, bigint(deg_f2));
     }
 
     current_deg_den = current_deg_den * static_cast<int>(l_);
-    current_lead_den = pow(current_lead_den, static_cast<int>(l_));
+    current_lead_den = pow(current_lead_den, static_cast<bigint>(l_));
 
     if (current_deg_num < current_deg_den) {
       return {LimitResult::FINITE, 0};

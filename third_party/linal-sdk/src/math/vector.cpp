@@ -1,12 +1,9 @@
 #include "vector.h"
 
 #include <cmath>
-#include <cstdio>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-
-#include "bigfloat.h"
 
 void Vector::check_dimension(size_t expected,
                              const std::string &operation) const {
@@ -72,7 +69,7 @@ Vector &Vector::operator*=(const bigfloat &scalar) & {
 }
 
 Vector &Vector::operator/=(const bigfloat &scalar) & {
-  if (scalar == 0) {
+  if (scalar == bigfloat(0UL)) {
     throw std::domain_error("Division by zero");
   }
   for (auto &component : components_) {
@@ -85,7 +82,7 @@ Vector Vector::operator+() const { return *this; }
 
 Vector Vector::operator-() const {
   auto copy = *this;
-  return copy *= -1;
+  return copy *= bigfloat(-1UL);
 }
 
 Vector operator+(Vector first, const Vector &second) { return first += second; }
@@ -113,7 +110,7 @@ bool operator!=(const Vector &first, const Vector &second) {
 bigfloat Vector::dot(const Vector &other) const {
   check_dimension(other.dimension(), "dot");
 
-  bigfloat result = 0;
+  bigfloat result(0UL);
   for (size_t i = 0; i < dimension(); ++i) {
     result += components_[i] * other.components_[i];
   }
@@ -216,7 +213,7 @@ bigfloat Vector::triple_product_7d(const Vector &a, const Vector &b,
 
 bool Vector::is_zero() const {
   for (const auto &component : components_) {
-    if (component != 0) {
+    if (component != bigfloat(0UL)) {
       return false;
     }
   }
@@ -224,7 +221,7 @@ bool Vector::is_zero() const {
 }
 
 bool Vector::is_orthogonal_to(const Vector &other) const {
-  return dot(other) == 0;
+  return dot(other) == bigfloat(0UL);
 }
 
 Vector Vector::zero(size_t dimension) { return Vector(dimension); }
@@ -234,7 +231,7 @@ Vector Vector::basis_vector(size_t dimension, size_t index) {
     throw std::out_of_range("Basis vector index out of range");
   }
   Vector result(dimension);
-  result[index] = 1;
+  result[index] = bigfloat(1UL);
   return result;
 }
 
@@ -252,7 +249,7 @@ bigfloat angle_between(const Vector &a, const Vector &b, const bigfloat &EPS) {
     throw std::domain_error("Vectors too small for angle calculation");
   }
 
-  return arccos(dot_product / norms_product, EPS * 1000);
+  return arccos(dot_product / norms_product, EPS * bigfloat(1000UL));
 }
 
 bool are_orthogonal(const Vector &a, const Vector &b) {
@@ -292,21 +289,5 @@ std::string Vector::to_string() const {
   return result;
 }
 
-Vector::Vector(std::string const &str) {
-  std::string cleaned = str;
-
-  size_t start = cleaned.find('(');
-  size_t end = cleaned.rfind(')');
-
-  if (start != std::string::npos && end != std::string::npos && start < end) {
-    cleaned = cleaned.substr(start + 1, end - start - 1);
-  }
-
-  std::stringstream in(cleaned);
-  std::string num;
-  while (in >> num) {
-    components_.emplace_back(num);
-  }
-}
 
 const std::vector<bigfloat> &Vector::components() const { return components_; }

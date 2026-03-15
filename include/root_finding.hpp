@@ -18,7 +18,7 @@ struct RootStep {
 };
 
 inline RootResult bisection(
-    std::function<double(double)> f,
+    const std::function<double(double)>& f,
     double a,
     double b,
     double eps      = 1e-10,
@@ -44,8 +44,8 @@ inline RootResult bisection(
 }
 
 inline RootResult newton(
-    std::function<double(double)> f,
-    std::function<double(double)> df,
+    const std::function<double(double)>& f,
+    const std::function<double(double)>& df,
     double x0,
     double eps      = 1e-10,
     size_t max_iter = 100000,
@@ -68,8 +68,8 @@ inline RootResult newton(
 }
 
 inline RootResult newton_modified(
-    std::function<double(double)> f,
-    std::function<double(double)> df,
+    const std::function<double(double)>& f,
+    const std::function<double(double)>& df,
     double x0,
     double sigma,
     double eps      = 1e-10,

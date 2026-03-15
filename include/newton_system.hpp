@@ -21,13 +21,9 @@ struct SystemStep {
 };
 
 inline SystemResult newton_system(
-
   const std::function<Vector(const Vector&)>& F,
-
   const std::function<Matrix(const Vector&)>& J,
-
   const Vector& x0,
-
   double eps = 1e-10,
   size_t max_iter = 100000,
   std::vector<SystemStep>* steps = nullptr

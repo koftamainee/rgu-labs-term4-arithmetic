@@ -86,7 +86,7 @@ public:
     return deg;
   }
   elem from_polynomial(const Polynomial &p) {
-    const Vector &v = p.coefficients();
+    const VectorBF &v = p.coefficients();
     elem a = 0;
     const size_t n = v.dimension();
     for (size_t i = 0; i < n && i < 64; i++) {
@@ -102,7 +102,7 @@ public:
     for (int i = 0; i <= m_n; i++) {
       coeffs.emplace_back((a >> i) & 1 ? 1 : 0);
     }
-    return {Vector(coeffs)};
+    return {VectorBF(coeffs)};
   }
   std::string to_string(elem a) const {
     return to_polynomial(a).to_string();

@@ -4,7 +4,7 @@
 #include "bigmath/bigfloat.hpp"
 #include "limit.hpp"
 #include "polynomial.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <stdexcept>
 
 class RationalFunction {
@@ -30,7 +30,7 @@ public:
     }
   }
 
-  RationalFunction(const Vector &num_coeffs, const Vector &den_coeffs,
+  RationalFunction(const VectorBF &num_coeffs, const VectorBF &den_coeffs,
                    const bigfloat &a = 0)
       : numerator_(num_coeffs, a), denominator_(den_coeffs, a) {
     if (denominator_.is_zero()) {

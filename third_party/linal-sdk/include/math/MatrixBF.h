@@ -4,42 +4,42 @@
 #include <vector>
 
 #include "bigmath/bigfloat.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 
-class Matrix {
+class MatrixBF {
  private:
   std::vector<std::vector<bigfloat>> data_;
   size_t rows_{}, cols_{};
 
-  void check_same_size(const Matrix& other, const std::string& op) const;
+  void check_same_size(const MatrixBF& other, const std::string& op) const;
   void check_square(const std::string& op) const;
 
  public:
-  Matrix() = default;
-  Matrix(size_t rows, size_t cols);
-  Matrix(std::vector<std::vector<bigfloat>> const& data);
+  MatrixBF() = default;
+  MatrixBF(size_t rows, size_t cols);
+  MatrixBF(std::vector<std::vector<bigfloat>> const& data);
 
   size_t rows() const noexcept;
   size_t cols() const noexcept;
   bigfloat& at(size_t row, size_t col);
   const bigfloat& at(size_t row, size_t col) const;
 
-  Matrix& operator+=(const Matrix& other);
-  Matrix& operator-=(const Matrix& other);
-  Matrix& operator*=(const bigfloat& scalar);
-  Matrix& operator*=(const Matrix& other);
+  MatrixBF& operator+=(const MatrixBF& other);
+  MatrixBF& operator-=(const MatrixBF& other);
+  MatrixBF& operator*=(const bigfloat& scalar);
+  MatrixBF& operator*=(const MatrixBF& other);
 
-  Matrix operator+(const Matrix& other) const;
-  Matrix operator-(const Matrix& other) const;
-  Matrix operator*(const bigfloat& scalar) const;
-  Matrix operator*(const Matrix& other) const;
+  MatrixBF operator+(const MatrixBF& other) const;
+  MatrixBF operator-(const MatrixBF& other) const;
+  MatrixBF operator*(const bigfloat& scalar) const;
+  MatrixBF operator*(const MatrixBF& other) const;
 
-  bool operator==(const Matrix& other) const;
-  bool operator!=(const Matrix& other) const;
+  bool operator==(const MatrixBF& other) const;
+  bool operator!=(const MatrixBF& other) const;
 
   bigfloat determinant() const;
-  Matrix inverse() const;
-  Matrix transpose() const;
+  MatrixBF inverse() const;
+  MatrixBF transpose() const;
   std::vector<bigfloat> solve_gauss(std::vector<bigfloat> const& b) const;
   std::vector<bigfloat> solve_gauss_jordan(
       std::vector<bigfloat> const& b) const;

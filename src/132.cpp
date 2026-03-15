@@ -1,6 +1,6 @@
 #include "bigmath/bigfloat.hpp"
 #include "polynomial.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <iostream>
 #include <vector>
 
@@ -27,12 +27,12 @@ public:
           Polynomial shifted =
               v[j + 1].change_expansion_point(v[j + 1].expansion_point() + x0);
 
-          Vector coeffs_j = v[j].coefficients();
-          Vector coeffs_jp1 = shifted.coefficients();
+          VectorBF coeffs_j = v[j].coefficients();
+          VectorBF coeffs_jp1 = shifted.coefficients();
 
           size_t max_dim =
               std::max(coeffs_j.dimension(), coeffs_jp1.dimension());
-          Vector new_coeffs(max_dim);
+          VectorBF new_coeffs(max_dim);
 
           for (size_t i = 0; i < max_dim; i++) {
             bigfloat c1 = (i < coeffs_j.dimension()) ? coeffs_j[i] : 0;
@@ -77,9 +77,9 @@ int main(void) {
   std::cout << "where each v_i is itself a polynomial in another variable\n";
   std::cout << "the program computes u(x + x0) using Horner scheme\n\n";
 
-  Polynomial v0(Vector({1, 1}), 0);
-  Polynomial v1(Vector({2, 3}), 0);
-  Polynomial v2(Vector({1, -1}), 0);
+  Polynomial v0(VectorBF({1, 1}), 0);
+  Polynomial v1(VectorBF({2, 3}), 0);
+  Polynomial v2(VectorBF({1, -1}), 0);
 
   std::vector<Polynomial> coeffs = {v0, v1, v2};
   PolynomialOfPolynomials poly_of_poly(coeffs);

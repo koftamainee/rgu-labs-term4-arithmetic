@@ -1,28 +1,28 @@
-#include "matrix.h"
+#include "MatrixBF.h"
 
 #include <exception>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
-#include "vector.h"
+#include "VectorBF.h"
 
-void Matrix::check_same_size(const Matrix& other, const std::string& op) const {
+void MatrixBF::check_same_size(const MatrixBF& other, const std::string& op) const {
   if (rows_ != other.rows_ || cols_ != other.cols_) {
     throw std::runtime_error("Matrix size mismatch in operation: " + op);
   }
 }
 
-void Matrix::check_square(const std::string& op) const {
+void MatrixBF::check_square(const std::string& op) const {
   if (rows_ != cols_) {
     throw std::runtime_error("Matrix must be square for operation: " + op);
   }
 }
 
-Matrix::Matrix(size_t rows, size_t cols)
+MatrixBF::MatrixBF(size_t rows, size_t cols)
     : data_(rows, std::vector<bigfloat>(cols, 0)), rows_(rows), cols_(cols) {}
 
-Matrix::Matrix(const std::vector<std::vector<bigfloat>>& data)
+MatrixBF::MatrixBF(const std::vector<std::vector<bigfloat>>& data)
     : data_(data),
       rows_(data.size()),
       cols_(data.empty() ? 0 : data[0].size()) {
@@ -33,15 +33,15 @@ Matrix::Matrix(const std::vector<std::vector<bigfloat>>& data)
   }
 }
 
-size_t Matrix::rows() const noexcept { return rows_; }
-size_t Matrix::cols() const noexcept { return cols_; }
+size_t MatrixBF::rows() const noexcept { return rows_; }
+size_t MatrixBF::cols() const noexcept { return cols_; }
 
-bigfloat& Matrix::at(size_t row, size_t col) { return data_.at(row).at(col); }
-const bigfloat& Matrix::at(size_t row, size_t col) const {
+bigfloat& MatrixBF::at(size_t row, size_t col) { return data_.at(row).at(col); }
+const bigfloat& MatrixBF::at(size_t row, size_t col) const {
   return data_.at(row).at(col);
 }
 
-Matrix& Matrix::operator+=(const Matrix& other) {
+MatrixBF& MatrixBF::operator+=(const MatrixBF& other) {
   check_same_size(other, "+=");
   for (size_t i = 0; i < rows_; ++i) {
     for (size_t j = 0; j < cols_; ++j) {
@@ -51,13 +51,13 @@ Matrix& Matrix::operator+=(const Matrix& other) {
   return *this;
 }
 
-Matrix Matrix::operator+(const Matrix& other) const {
-  Matrix result = *this;
+MatrixBF MatrixBF::operator+(const MatrixBF& other) const {
+  MatrixBF result = *this;
   result += other;
   return result;
 }
 
-Matrix& Matrix::operator-=(const Matrix& other) {
+MatrixBF& MatrixBF::operator-=(const MatrixBF& other) {
   check_same_size(other, "-=");
   for (size_t i = 0; i < rows_; ++i) {
     for (size_t j = 0; j < cols_; ++j) {
@@ -67,13 +67,13 @@ Matrix& Matrix::operator-=(const Matrix& other) {
   return *this;
 }
 
-Matrix Matrix::operator-(const Matrix& other) const {
-  Matrix result = *this;
+MatrixBF MatrixBF::operator-(const MatrixBF& other) const {
+  MatrixBF result = *this;
   result -= other;
   return result;
 }
 
-Matrix& Matrix::operator*=(const bigfloat& scalar) {
+MatrixBF& MatrixBF::operator*=(const bigfloat& scalar) {
   for (size_t i = 0; i < rows_; ++i) {
     for (size_t j = 0; j < cols_; ++j) {
       data_[i][j] *= scalar;
@@ -82,18 +82,18 @@ Matrix& Matrix::operator*=(const bigfloat& scalar) {
   return *this;
 }
 
-Matrix Matrix::operator*(const bigfloat& scalar) const {
-  Matrix result = *this;
+MatrixBF MatrixBF::operator*(const bigfloat& scalar) const {
+  MatrixBF result = *this;
   result *= scalar;
   return result;
 }
 
-Matrix& Matrix::operator*=(const Matrix& other) {
+MatrixBF& MatrixBF::operator*=(const MatrixBF& other) {
   if (cols_ != other.rows_) {
     throw std::runtime_error("Matrix multiplication dimension mismatch");
   }
 
-  Matrix result(rows_, other.cols_);
+  MatrixBF result(rows_, other.cols_);
 
   for (size_t i = 0; i < rows_; ++i) {
     for (size_t j = 0; j < other.cols_; ++j) {
@@ -108,18 +108,18 @@ Matrix& Matrix::operator*=(const Matrix& other) {
   return *this;
 }
 
-Matrix Matrix::operator*(const Matrix& other) const {
-  Matrix result = *this;
+MatrixBF MatrixBF::operator*(const MatrixBF& other) const {
+  MatrixBF result = *this;
   result *= other;
   return result;
 }
-bool Matrix::operator==(const Matrix& other) const {
+bool MatrixBF::operator==(const MatrixBF& other) const {
   return data_ == other.data_;
 }
 
-bool Matrix::operator!=(const Matrix& other) const { return !(*this == other); }
+bool MatrixBF::operator!=(const MatrixBF& other) const { return !(*this == other); }
 
-std::string Matrix::to_string() const {
+std::string MatrixBF::to_string() const {
   std::string result;
   for (const auto& row : data_) {
     result += "(";
@@ -134,10 +134,10 @@ std::string Matrix::to_string() const {
   return result;
 }
 
-bigfloat Matrix::determinant() const {
+bigfloat MatrixBF::determinant() const {
   check_square("determinant");
   size_t n = rows_;
-  Matrix temp = *this;
+  MatrixBF temp = *this;
   bigfloat det = 1;
 
   for (size_t i = 0; i < n; ++i) {
@@ -169,11 +169,11 @@ bigfloat Matrix::determinant() const {
   return det;
 }
 
-Matrix Matrix::inverse() const {
+MatrixBF MatrixBF::inverse() const {
   check_square("inverse");
   size_t n = rows_;
-  Matrix a = *this;
-  Matrix inv(n, n);
+  MatrixBF a = *this;
+  MatrixBF inv(n, n);
   for (size_t i = 0; i < n; ++i) {
     inv.at(i, i) = 1;
   }
@@ -216,11 +216,11 @@ Matrix Matrix::inverse() const {
   return inv;
 }
 
-std::vector<bigfloat> Matrix::solve_gauss(
+std::vector<bigfloat> MatrixBF::solve_gauss(
     std::vector<bigfloat> const& b) const {
   check_square("solve_gauss");
   size_t n = rows_;
-  Matrix a = *this;
+  MatrixBF a = *this;
   std::vector<bigfloat> x = b;
 
   for (size_t i = 0; i < n; ++i) {
@@ -264,11 +264,11 @@ std::vector<bigfloat> Matrix::solve_gauss(
   return result;
 }
 
-std::vector<bigfloat> Matrix::solve_gauss_jordan(
+std::vector<bigfloat> MatrixBF::solve_gauss_jordan(
     std::vector<bigfloat> const& b) const {
   check_square("solve_gauss_jordan");
   size_t n = rows_;
-  Matrix a = *this;
+  MatrixBF a = *this;
   std::vector<bigfloat> x = b;
 
   for (size_t i = 0; i < n; ++i) {
@@ -316,8 +316,8 @@ std::vector<bigfloat> Matrix::solve_gauss_jordan(
   return x;
 }
 
-size_t Matrix::rank() const {
-  Matrix temp = *this;
+size_t MatrixBF::rank() const {
+  MatrixBF temp = *this;
   size_t rank = 0;
   size_t m = rows_;
   size_t n = cols_;
@@ -444,9 +444,9 @@ size_t Matrix::rank() const {
 //   return eigvecs;
 // }
 
-size_t Matrix::span_dimension(
+size_t MatrixBF::span_dimension(
     const std::vector<std::vector<bigfloat>>& vectors) {
-  Matrix m(vectors.size(), vectors[0].size());
+  MatrixBF m(vectors.size(), vectors[0].size());
   for (size_t i = 0; i < vectors.size(); ++i) {
     m.data_[i] = vectors[i];
   }
@@ -454,9 +454,9 @@ size_t Matrix::span_dimension(
   return m.rank();
 }
 
-bool Matrix::is_in_span(const std::vector<std::vector<bigfloat>>& basis,
+bool MatrixBF::is_in_span(const std::vector<std::vector<bigfloat>>& basis,
                         const std::vector<bigfloat>& vector) {
-  Matrix m(basis.size(), basis[0].size());
+  MatrixBF m(basis.size(), basis[0].size());
   for (size_t i = 0; i < basis.size(); ++i) {
     m.data_[i] = basis[i];
   }
@@ -470,8 +470,8 @@ bool Matrix::is_in_span(const std::vector<std::vector<bigfloat>>& basis,
   }
 }
 
-Matrix Matrix::transpose() const {
-  Matrix result(cols_, rows_);
+MatrixBF MatrixBF::transpose() const {
+  MatrixBF result(cols_, rows_);
 
   for (size_t i = 0; i < rows_; ++i) {
     for (size_t j = 0; j < cols_; ++j) {

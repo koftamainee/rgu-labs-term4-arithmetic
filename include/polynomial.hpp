@@ -2,21 +2,21 @@
 #define POLYNOMIAL_HPP
 
 #include "bigmath/bigfloat.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <string>
 
 #include "poly_tostring.hpp"
 
 class Polynomial {
 private:
-  Vector coeffs_;
+  VectorBF coeffs_;
   bigfloat a_;
 
 public:
-  Polynomial(const Vector &coeffs, const bigfloat &a = bigfloat(0))
+  Polynomial(const VectorBF &coeffs, const bigfloat &a = bigfloat(0))
       : coeffs_(coeffs), a_(a) {}
 
-  const Vector &coefficients() const { return coeffs_; }
+  const VectorBF &coefficients() const { return coeffs_; }
 
   const bigfloat &expansion_point() const { return a_; }
 
@@ -53,7 +53,7 @@ public:
       return *this;
     }
 
-    Vector new_coeffs = coeffs_;
+    VectorBF new_coeffs = coeffs_;
     bigfloat c = B - a_;
     size_t n = new_coeffs.dimension();
 
@@ -83,7 +83,7 @@ public:
     std::vector<bigfloat> result(n, bigfloat(0));
     for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i] += coeffs_[i];
     for (size_t i = 0; i < other.coeffs_.dimension(); ++i) result[i] += other.coeffs_[i];
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   Polynomial operator-(const Polynomial& other) const {
@@ -91,31 +91,31 @@ public:
     std::vector<bigfloat> result(n, bigfloat(0));
     for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i] += coeffs_[i];
     for (size_t i = 0; i < other.coeffs_.dimension(); ++i) result[i] -= other.coeffs_[i];
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   Polynomial operator*(const bigfloat& scalar) const {
     std::vector<bigfloat> result(coeffs_.dimension());
     for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i] = coeffs_[i] * scalar;
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   Polynomial operator*(const Polynomial& other) const {
     const size_t fn = coeffs_.dimension();
     const size_t gn = other.coeffs_.dimension();
     if (fn == 0 || gn == 0)
-      return Polynomial(Vector(std::vector<bigfloat>{bigfloat(0)}));
+      return Polynomial(VectorBF(std::vector<bigfloat>{bigfloat(0)}));
     std::vector<bigfloat> result(fn + gn - 1, bigfloat(0));
     for (size_t i = 0; i < fn; ++i)
       for (size_t j = 0; j < gn; ++j)
         result[i + j] += coeffs_[i] * other.coeffs_[j];
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   Polynomial rem_xn_minus_1(const size_t n) const {
     std::vector<bigfloat> result(n, bigfloat(0));
     for (size_t i = 0; i < coeffs_.dimension(); ++i) result[i % n] += coeffs_[i];
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   Polynomial rem_xn_plus_1(const size_t n) const {
@@ -124,7 +124,7 @@ public:
       if ((i / n) % 2 == 0) result[i % n] += coeffs_[i];
       else                   result[i % n] -= coeffs_[i];
     }
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   Polynomial substitute_wx(const std::vector<bigfloat>& omega_powers) const {
@@ -132,14 +132,14 @@ public:
     std::vector<bigfloat> result(n);
     for (size_t i = 0; i < n; ++i)
       result[i] = coeffs_[i] * omega_powers[i % omega_powers.size()];
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   Polynomial first_n_coeffs(const size_t n) const {
     std::vector<bigfloat> result(n, bigfloat(0));
     for (size_t i = 0; i < n && i < coeffs_.dimension(); ++i)
       result[i] = coeffs_[i];
-    return Polynomial(Vector(result));
+    return Polynomial(VectorBF(result));
   }
 
   std::string to_string() const { return poly_tostring(coeffs_, a_); }

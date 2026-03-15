@@ -2,7 +2,7 @@
 #define POLY_TOSTRING_HPP
 
 #include "bigmath/bigfloat.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <complex>
 #include <sstream>
 #include <string>
@@ -46,7 +46,7 @@ inline std::string poly_tostring(const std::vector<bigfloat> &coeffs,
   return out.str();
 }
 
-inline std::string poly_tostring(const Vector &coeffs, bigfloat a) {
+inline std::string poly_tostring(const VectorBF &coeffs, bigfloat a) {
   return poly_tostring(coeffs.components(), a);
 }
 

@@ -1,8 +1,8 @@
 #include "bigmath/bigfloat.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <iostream>
 
-bigfloat evaluate_polynomial_factorial(const Vector &coeffs,
+bigfloat evaluate_polynomial_factorial(const VectorBF &coeffs,
                                        const bigfloat &x) {
   size_t n = coeffs.dimension();
   if (n == 0) {
@@ -28,7 +28,7 @@ int main(void) {
   std::cout << "This representation is called the factorial powers (or falling "
                "factorial) form.\n\n";
 
-  Vector coeffs({1, 2, 3, 4});
+  VectorBF coeffs({1, 2, 3, 4});
 
   bigfloat x = bigfloat(5);
 

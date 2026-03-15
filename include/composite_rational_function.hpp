@@ -4,7 +4,7 @@
 #include "bigmath/bigfloat.hpp"
 #include "limit.hpp"
 #include "polynomial.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <stdexcept>
 #include <utility>
 

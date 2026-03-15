@@ -1,7 +1,7 @@
 #include "bigmath/bigfloat.hpp"
 #include "limit.hpp"
 #include "rational_function.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <iostream>
 
 int main(void) {
@@ -15,8 +15,8 @@ int main(void) {
   std::cout << "3) lim(x -> -infinity) R(x).\n";
 
   std::cout << "Example 1: " << std::endl;
-  Vector f1 = {-1, 0, 1};
-  Vector g1 = {-1, 1};
+  VectorBF f1 = {-1, 0, 1};
+  VectorBF g1 = {-1, 1};
   RationalFunction R1(f1, g1);
 
   std::cout << R1.to_string() << std::endl;
@@ -34,8 +34,8 @@ int main(void) {
   std::cout << std::endl;
 
   std::cout << "Example 2: " << std::endl;
-  Vector f2 = {1};
-  Vector g2 = {0, 1};
+  VectorBF f2 = {1};
+  VectorBF g2 = {0, 1};
   RationalFunction R2(f2, g2);
 
   std::cout << R2.to_string() << std::endl;
@@ -53,8 +53,8 @@ int main(void) {
   std::cout << std::endl;
 
   std::cout << "Example 3: " << std::endl;
-  Vector f3 = {-4, 0, 1};
-  Vector g3 = {0, -2, 1};
+  VectorBF f3 = {-4, 0, 1};
+  VectorBF g3 = {0, -2, 1};
   RationalFunction R3(f3, g3);
 
   std::cout << R3.to_string() << std::endl;

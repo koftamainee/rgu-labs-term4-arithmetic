@@ -2,7 +2,7 @@
 #include "composite_rational_function.hpp"
 #include "limit.hpp"
 #include "polynomial.hpp"
-#include "vector.h"
+#include "VectorBF.h"
 #include <iostream>
 
 int main() {
@@ -18,12 +18,12 @@ int main() {
 
   std::cout << "Example 1:" << std::endl;
 
-  Vector f1_coeffs = {-1, 1};
-  Vector s1_coeffs = {0, 0, 1};
+  VectorBF f1_coeffs = {-1, 1};
+  VectorBF s1_coeffs = {0, 0, 1};
   size_t k = 2;
 
-  Vector f2_coeffs = {1, 1};
-  Vector s2_coeffs = {0, 1};
+  VectorBF f2_coeffs = {1, 1};
+  VectorBF s2_coeffs = {0, 1};
   size_t l = 2;
 
   Polynomial f1(f1_coeffs, 0);
@@ -49,12 +49,12 @@ int main() {
 
   std::cout << "Example 2: " << std::endl;
 
-  Vector f1_coeffs2 = {0, 1};
-  Vector s1_coeffs2 = {-1, 1};
+  VectorBF f1_coeffs2 = {0, 1};
+  VectorBF s1_coeffs2 = {-1, 1};
   size_t k2 = 1;
 
-  Vector f2_coeffs2 = {0, 1};
-  Vector s2_coeffs2 = {0, 0, 1};
+  VectorBF f2_coeffs2 = {0, 1};
+  VectorBF s2_coeffs2 = {0, 0, 1};
   size_t l2 = 2;
 
   Polynomial f1_2(f1_coeffs2, 0);
@@ -83,12 +83,12 @@ int main() {
 
   std::cout << "Example 3" << std::endl;
 
-  Vector f1_coeffs3 = {1};
-  Vector s1_coeffs3 = {0, 1};
+  VectorBF f1_coeffs3 = {1};
+  VectorBF s1_coeffs3 = {0, 1};
   size_t k3 = 1;
 
-  Vector f2_coeffs3 = {0, 1};
-  Vector s2_coeffs3 = {0, 1};
+  VectorBF f2_coeffs3 = {0, 1};
+  VectorBF s2_coeffs3 = {0, 1};
   size_t l3 = 1;
 
   Polynomial f1_3(f1_coeffs3, 0);

@@ -1,11 +1,11 @@
-#include "vector.h"
+#include "VectorBF.h"
 
 #include <cmath>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
-void Vector::check_dimension(size_t expected,
+void VectorBF::check_dimension(size_t expected,
                              const std::string &operation) const {
   if (dimension() != expected) {
     throw std::invalid_argument(
@@ -14,36 +14,36 @@ void Vector::check_dimension(size_t expected,
   }
 }
 
-void Vector::check_non_zero() const {
+void VectorBF::check_non_zero() const {
   if (is_zero()) {
     throw std::domain_error("Vector operation on zero vector");
   }
 }
 
-Vector::Vector(size_t dimension) : components_(dimension) {}
+VectorBF::VectorBF(size_t dimension) : components_(dimension) {}
 
-Vector::Vector(const std::vector<bigfloat> &components)
+VectorBF::VectorBF(const std::vector<bigfloat> &components)
     : components_(components) {}
 
-Vector::Vector(std::initializer_list<bigfloat> init) : components_(init) {}
+VectorBF::VectorBF(std::initializer_list<bigfloat> init) : components_(init) {}
 
-size_t Vector::dimension() const noexcept { return components_.size(); }
+size_t VectorBF::dimension() const noexcept { return components_.size(); }
 
-const bigfloat &Vector::operator[](size_t index) const {
+const bigfloat &VectorBF::operator[](size_t index) const {
   if (index >= dimension()) {
     throw std::out_of_range("Vector index out of range");
   }
   return components_[index];
 }
 
-bigfloat &Vector::operator[](size_t index) {
+bigfloat &VectorBF::operator[](size_t index) {
   if (index >= dimension()) {
     throw std::out_of_range("Vector index out of range");
   }
   return components_[index];
 }
 
-Vector &Vector::operator+=(const Vector &other) & {
+VectorBF &VectorBF::operator+=(const VectorBF &other) & {
   check_dimension(other.dimension(), "operator+=");
 
   for (size_t i = 0; i < dimension(); ++i) {
@@ -52,7 +52,7 @@ Vector &Vector::operator+=(const Vector &other) & {
   return *this;
 }
 
-Vector &Vector::operator-=(const Vector &other) & {
+VectorBF &VectorBF::operator-=(const VectorBF &other) & {
   check_dimension(other.dimension(), "operator-=");
 
   for (size_t i = 0; i < dimension(); ++i) {
@@ -61,14 +61,14 @@ Vector &Vector::operator-=(const Vector &other) & {
   return *this;
 }
 
-Vector &Vector::operator*=(const bigfloat &scalar) & {
+VectorBF &VectorBF::operator*=(const bigfloat &scalar) & {
   for (auto &c : components_) {
     c *= scalar;
   }
   return *this;
 }
 
-Vector &Vector::operator/=(const bigfloat &scalar) & {
+VectorBF &VectorBF::operator/=(const bigfloat &scalar) & {
   if (scalar == bigfloat(0UL)) {
     throw std::domain_error("Division by zero");
   }
@@ -78,20 +78,20 @@ Vector &Vector::operator/=(const bigfloat &scalar) & {
   return *this;
 }
 
-Vector Vector::operator+() const { return *this; }
+VectorBF VectorBF::operator+() const { return *this; }
 
-Vector Vector::operator-() const {
+VectorBF VectorBF::operator-() const {
   auto copy = *this;
   return copy *= bigfloat(-1UL);
 }
 
-Vector operator+(Vector first, const Vector &second) { return first += second; }
-Vector operator-(Vector first, const Vector &second) { return first -= second; }
-Vector operator*(Vector vec, const bigfloat &scalar) { return vec *= scalar; }
-Vector operator*(const bigfloat &scalar, Vector vec) { return vec *= scalar; }
-Vector operator/(Vector vec, const bigfloat &scalar) { return vec /= scalar; }
+VectorBF operator+(VectorBF first, const VectorBF &second) { return first += second; }
+VectorBF operator-(VectorBF first, const VectorBF &second) { return first -= second; }
+VectorBF operator*(VectorBF vec, const bigfloat &scalar) { return vec *= scalar; }
+VectorBF operator*(const bigfloat &scalar, VectorBF vec) { return vec *= scalar; }
+VectorBF operator/(VectorBF vec, const bigfloat &scalar) { return vec /= scalar; }
 
-bool operator==(const Vector &first, const Vector &second) {
+bool operator==(const VectorBF &first, const VectorBF &second) {
   if (first.dimension() != second.dimension()) {
     return false;
   }
@@ -103,11 +103,11 @@ bool operator==(const Vector &first, const Vector &second) {
   return true;
 }
 
-bool operator!=(const Vector &first, const Vector &second) {
+bool operator!=(const VectorBF &first, const VectorBF &second) {
   return !(first == second);
 }
 
-bigfloat Vector::dot(const Vector &other) const {
+bigfloat VectorBF::dot(const VectorBF &other) const {
   check_dimension(other.dimension(), "dot");
 
   bigfloat result(0UL);
@@ -117,9 +117,9 @@ bigfloat Vector::dot(const Vector &other) const {
   return result;
 }
 
-bigfloat Vector::norm() const { return sqrt(dot(*this)); }
+bigfloat VectorBF::norm() const { return sqrt(dot(*this)); }
 
-Vector Vector::normalize(const bigfloat &EPS) const {
+VectorBF VectorBF::normalize(const bigfloat &EPS) const {
   check_non_zero();
   const bigfloat n = norm();
   if (n < EPS) {
@@ -128,7 +128,7 @@ Vector Vector::normalize(const bigfloat &EPS) const {
   return *this / n;
 }
 
-Vector Vector::cross_3d(const Vector &other) const {
+VectorBF VectorBF::cross_3d(const VectorBF &other) const {
   check_dimension(3, "cross_3d");
   other.check_dimension(3, "cross_3d");
 
@@ -139,10 +139,10 @@ Vector Vector::cross_3d(const Vector &other) const {
   bigfloat z = components_[0] * other.components_[1] -
                components_[1] * other.components_[0];
 
-  return Vector{x, y, z};
+  return VectorBF{x, y, z};
 }
 
-Vector Vector::cross_7d(const Vector &other) const {
+VectorBF VectorBF::cross_7d(const VectorBF &other) const {
   check_dimension(7, "cross_7d");
   other.check_dimension(7, "cross_7d");
 
@@ -197,21 +197,21 @@ Vector Vector::cross_7d(const Vector &other) const {
          components_[3] * other.components_[4] -
          components_[4] * other.components_[3];
 
-  return Vector{r[0], r[1], r[2], r[3], r[4], r[5], r[6]};
+  return VectorBF{r[0], r[1], r[2], r[3], r[4], r[5], r[6]};
 }
 
 // Static methods
-bigfloat Vector::triple_product_3d(const Vector &a, const Vector &b,
-                                   const Vector &c) {
+bigfloat VectorBF::triple_product_3d(const VectorBF &a, const VectorBF &b,
+                                   const VectorBF &c) {
   return a.dot(b.cross_3d(c));
 }
 
-bigfloat Vector::triple_product_7d(const Vector &a, const Vector &b,
-                                   const Vector &c) {
+bigfloat VectorBF::triple_product_7d(const VectorBF &a, const VectorBF &b,
+                                   const VectorBF &c) {
   return a.dot(b.cross_7d(c));
 }
 
-bool Vector::is_zero() const {
+bool VectorBF::is_zero() const {
   for (const auto &component : components_) {
     if (component != bigfloat(0UL)) {
       return false;
@@ -220,22 +220,22 @@ bool Vector::is_zero() const {
   return true;
 }
 
-bool Vector::is_orthogonal_to(const Vector &other) const {
+bool VectorBF::is_orthogonal_to(const VectorBF &other) const {
   return dot(other) == bigfloat(0UL);
 }
 
-Vector Vector::zero(size_t dimension) { return Vector(dimension); }
+VectorBF VectorBF::zero(size_t dimension) { return VectorBF(dimension); }
 
-Vector Vector::basis_vector(size_t dimension, size_t index) {
+VectorBF VectorBF::basis_vector(size_t dimension, size_t index) {
   if (index >= dimension) {
     throw std::out_of_range("Basis vector index out of range");
   }
-  Vector result(dimension);
+  VectorBF result(dimension);
   result[index] = bigfloat(1UL);
   return result;
 }
 
-bigfloat angle_between(const Vector &a, const Vector &b, const bigfloat &EPS) {
+bigfloat angle_between(const VectorBF &a, const VectorBF &b, const bigfloat &EPS) {
   a.check_dimension(b.dimension(), "angle_between");
 
   if (a.is_zero() || b.is_zero()) {
@@ -252,11 +252,11 @@ bigfloat angle_between(const Vector &a, const Vector &b, const bigfloat &EPS) {
   return arccos(dot_product / norms_product, EPS * bigfloat(1000UL));
 }
 
-bool are_orthogonal(const Vector &a, const Vector &b) {
+bool are_orthogonal(const VectorBF &a, const VectorBF &b) {
   return a.is_orthogonal_to(b);
 }
 
-bool are_collinear(const Vector &a, const Vector &b) {
+bool are_collinear(const VectorBF &a, const VectorBF &b) {
   if (a.dimension() != b.dimension()) {
     return false;
   }
@@ -273,7 +273,7 @@ bool are_collinear(const Vector &a, const Vector &b) {
   return true;
 }
 
-std::string Vector::to_string() const {
+std::string VectorBF::to_string() const {
   if (components_.empty()) {
     return "[]";
   }
@@ -290,4 +290,4 @@ std::string Vector::to_string() const {
 }
 
 
-const std::vector<bigfloat> &Vector::components() const { return components_; }
+const std::vector<bigfloat> &VectorBF::components() const { return components_; }

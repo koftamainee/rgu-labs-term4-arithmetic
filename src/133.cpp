@@ -66,7 +66,7 @@ int main() {
   std::vector<std::vector<bigfloat>> coeffs = {
       {1, 3, 6, 10}, {2, 5, 9, 0}, {4, 8, 0, 0}, {7, 0, 0, 0}};
 
-  bigfloat x = {3, 2}, y = 2;
+  bigfloat x = {3UL, 2}, y = 2;
 
   bigfloat val = poly2d_eval(coeffs, x, y, n);
 

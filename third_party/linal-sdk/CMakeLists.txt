@@ -1,8 +1,8 @@
 add_library(linal STATIC
         #        src/math/line_2d.cpp
         #        src/math/line_nd.cpp
-        src/math/matrix.cpp
-        src/math/vector.cpp
+        src/math/MatrixBF.cpp
+        src/math/VectorBF.cpp
 )
 
 include(FetchContent)

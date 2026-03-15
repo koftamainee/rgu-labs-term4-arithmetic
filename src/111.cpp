@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "matrix.h"
-#include "vector.h"
+#include "MatrixBF.h"
+#include "VectorBF.h"
 
 
 int main(void) {
@@ -18,8 +18,8 @@ int main(void) {
 
   std::vector<bigfloat> f_coeffs = {5, 7, 3};
 
-  Matrix M(basis);
-  Vector f(f_coeffs);
+  MatrixBF M(basis);
+  VectorBF f(f_coeffs);
 
   std::cout << "Span: " << M.to_string() << std::endl;
   std::cout << "f(x): " << f.to_string() << std::endl;
@@ -33,7 +33,7 @@ int main(void) {
     return 0;
   }
 
-  Vector A(solution);
+  VectorBF A(solution);
   std::cout << "f(x) belongs to the span. Coefficients A_l:\n";
   std::cout << A.to_string() << "\n";
 

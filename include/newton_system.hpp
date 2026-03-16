@@ -31,9 +31,7 @@ inline SystemResult newton_system(
   Vector x = x0;
   for (size_t i = 0; i < max_iter; ++i) {
     Vector fx = F(x);
-    std::vector<double> fx_raw(fx.components().begin(), fx.components().end());
-    std::vector<double> delta_raw = J(x).solve_gauss(fx_raw);
-    Vector delta(delta_raw);
+    Vector delta = J(x).solve_gauss(fx.components());
     Vector x_new = x - delta;
     if (steps)
       steps->push_back({i + 1, x_new});
@@ -45,13 +43,9 @@ inline SystemResult newton_system(
 }
 
 inline SystemResult newton_system_inf(
-
   const std::function<Vector(const Vector&)>& F,
-
   const std::function<Matrix(const Vector&)>& J,
-
   const Vector& x0,
-
   double eps = 1e-10,
   size_t max_iter = 100000,
   std::vector<SystemStep>* steps = nullptr

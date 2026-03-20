@@ -30,7 +30,6 @@ public:
   Vector(Vector&&) noexcept = default;
   Vector& operator=(const Vector&) = default;
   Vector& operator=(Vector&&) = default;
-  ~Vector() = default;
 
   size_type dimension() const noexcept { return m_components.size(); }
 

@@ -54,7 +54,7 @@ static std::string extract_body(const std::string& html) {
 static void notify_clients() {
   std::lock_guard lock(g_mutex);
   for (auto* sink : g_sinks) {
-    sink->write("data: reload\n\n", 14);
+    (void)sink->write("data: reload\n\n", 14);
   }
 }
 
@@ -460,19 +460,21 @@ int main() {
   });
 
   svr.Post("/publish", [](const httplib::Request& req, httplib::Response& res) {
-    std::string new_dir = req.body;
-    if (!fs::exists(new_dir)) {
-      res.status = 400;
-      res.set_content("artifact directory not found", "text/plain");
-      return;
-    }
-    {
-      std::lock_guard lock(g_mutex);
-      cleanup_artifact();
-      g_artifact_dir = new_dir;
-    }
-    notify_clients();
-    res.set_content("ok", "text/plain");
+      std::string new_dir = req.body;
+      if (!fs::exists(new_dir)) {
+          res.status = 400;
+          res.set_content("artifact directory not found", "text/plain");
+          return;
+      }
+      {
+          std::lock_guard lock(g_mutex);
+          if (new_dir != g_artifact_dir) {
+              cleanup_artifact();
+          }
+          g_artifact_dir = new_dir;
+      }
+      notify_clients();
+      res.set_content("ok", "text/plain");
   });
 
   svr.Get("/assets/(.*)", [](const httplib::Request& req, httplib::Response& res) {

@@ -85,7 +85,7 @@ public:
     }
 
     bool operator<=(const Monomial& other) const noexcept {
-        return !(other < *this);
+        return other >= *this;
     }
 
     bool operator>(const Monomial& other) const noexcept {

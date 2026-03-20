@@ -18,6 +18,50 @@ public:
   explicit Reporter(std::string title)
     : m_title(std::move(title)) {}
 
+  static std::string math(const std::string& s) { return "\\(" + s + "\\)"; }
+  static std::string display(const std::string& s) { return "\\[" + s + "\\]"; }
+
+  static std::string mbf(const std::string& s) { return "\\mathbf{" + s + "}"; }
+  static std::string mbb(const std::string& s) { return "\\mathbb{" + s + "}"; }
+  static std::string mit(const std::string& s) { return "\\mathit{" + s + "}"; }
+  static std::string mrm(const std::string& s) { return "\\mathrm{" + s + "}"; }
+  static std::string mtt(const std::string& s) { return "\\mathtt{" + s + "}"; }
+  static std::string txt(const std::string& s) { return "\\text{" + s + "}"; }
+
+  static std::string N() { return mbb("N"); }
+  static std::string Z() { return mbb("Z"); }
+  static std::string Q() { return mbb("Q"); }
+  static std::string R() { return mbb("R"); }
+  static std::string C() { return mbb("C"); }
+  static std::string F() { return mbb("F"); }
+
+  static std::string ring(const std::string& field, const std::vector<std::string>& vars) {
+    std::string s = field + "[";
+    for (std::size_t i = 0; i < vars.size(); ++i) {
+      if (i) s += ", ";
+      s += vars[i];
+    }
+    return s + "]";
+  }
+
+  static std::string eq(const std::string& a, const std::string& b) { return a + " = " + b; }
+  static std::string neq(const std::string& a, const std::string& b) { return a + " \\neq " + b; }
+  static std::string in(const std::string& a, const std::string& b) { return a + " \\in " + b; }
+  static std::string sub(const std::string& a, const std::string& b) { return a + " \\subseteq " + b; }
+
+  static std::string cdot(const std::string& a, const std::string& b) { return a + " \\cdot " + b; }
+  static std::string frac(const std::string& a, const std::string& b) { return "\\frac{" + a + "}{" + b + "}"; }
+  static std::string pow(const std::string& a, const std::string& b) { return a + "^{" + b + "}"; }
+  static std::string sub_script(const std::string& a, const std::string& b) { return a + "_{" + b + "}"; }
+  static std::string sqrt(const std::string& a) { return "\\sqrt{" + a + "}"; }
+  static std::string abs(const std::string& a) { return "\\lvert " + a + " \\rvert"; }
+  static std::string norm(const std::string& a) { return "\\lVert " + a + " \\rVert"; }
+
+  static std::string to() { return "\\to"; }
+  static std::string implies() { return "\\Rightarrow"; }
+  static std::string iff() { return "\\Leftrightarrow"; }
+  static std::string mapsto() { return "\\mapsto"; }
+
   Reporter& section(const std::string& text) {
     push(std::make_unique<HeadingBlock>(2, text));
     return *this;
@@ -48,7 +92,7 @@ public:
     return *this;
   }
 
-  Reporter& math(const ILatexSerializable& obj) {
+  Reporter& math_block(const ILatexSerializable& obj) {
     push(std::make_unique<MathBlock>(obj.to_latex()));
     return *this;
   }
@@ -66,10 +110,6 @@ public:
     std::string assets_dir = dir + "/assets";
     std::filesystem::create_directories(dir);
     std::filesystem::create_directories(assets_dir);
-
-    for (auto& block : m_blocks) {
-      block->prepare(assets_dir);
-    }
 
     std::string path = dir + "/index.html";
     std::ofstream out(path);
@@ -163,8 +203,16 @@ private:
       throw std::invalid_argument("Reporter::format: too many arguments for format string");
     }
     std::string result = fmt.substr(0, pos);
-    if constexpr (std::is_base_of_v<ILatexSerializable, T>) {
+    if constexpr (std::is_same_v<T, bool>) {
+      result += first ? "true" : "false";
+    }
+    else if constexpr (std::is_base_of_v<ILatexSerializable, T>) {
       result += "\\(" + first.to_latex() + "\\)";
+    }
+    else if constexpr (std::is_arithmetic_v<T>) {
+      std::ostringstream oss;
+      oss << first;
+      result += "\\(" + oss.str() + "\\)";
     }
     else {
       std::ostringstream oss;

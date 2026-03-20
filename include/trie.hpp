@@ -7,10 +7,10 @@
 #include <vector>
 
 template <typename Key, typename V>
-class TTrie final {
+class Trie final {
 public:
   using key_type = Key;
-  using symbol_type = Key::value_type;
+  using symbol_type = typename Key::value_type;
   using value_type = V;
   using size_type = std::size_t;
 
@@ -22,7 +22,7 @@ private:
 
   template <bool IsConst>
   class basic_iterator {
-    friend class TTrie;
+    friend class Trie;
 
     using node_ptr = std::conditional_t<IsConst, const Node*, Node*>;
     using value_ref = std::conditional_t<IsConst, const value_type&, value_type&>;
@@ -149,15 +149,15 @@ public:
   using iterator = basic_iterator<false>;
   using const_iterator = basic_iterator<true>;
 
-  TTrie() = default;
-  TTrie(const TTrie& other);
-  TTrie(TTrie&&) noexcept = default;
-  ~TTrie() = default;
+  Trie() = default;
+  Trie(const Trie& other);
+  Trie(Trie&&) noexcept = default;
+  ~Trie() = default;
 
-  TTrie& operator=(const TTrie& other);
-  TTrie& operator=(TTrie&&) noexcept = default;
+  Trie& operator=(const Trie& other);
+  Trie& operator=(Trie&&) noexcept = default;
 
-  bool empty() const noexcept;
+  [[nodiscard]] bool empty() const noexcept;
   size_type size() const noexcept;
 
   iterator begin() noexcept;
@@ -165,7 +165,7 @@ public:
   const_iterator begin() const noexcept;
   const_iterator end() const noexcept;
   const_iterator cbegin() const noexcept;
-  static const_iterator cend() noexcept;
+  const_iterator cend() const noexcept;
 
   iterator insert(const key_type& key, const value_type& value);
   iterator insert(const key_type& key, value_type&& value);
@@ -194,12 +194,12 @@ private:
 };
 
 template <typename Key, typename V>
-TTrie<Key, V>::TTrie(const TTrie& other) : m_size(other.m_size) {
+Trie<Key, V>::Trie(const Trie& other) : m_size(other.m_size) {
   m_root = clone_impl(other.m_root.get());
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>& TTrie<Key, V>::operator=(const TTrie& other) {
+Trie<Key, V>& Trie<Key, V>::operator=(const Trie& other) {
   if (this != &other) {
     m_root = clone_impl(other.m_root.get());
     m_size = other.m_size;
@@ -208,57 +208,57 @@ TTrie<Key, V>& TTrie<Key, V>::operator=(const TTrie& other) {
 }
 
 template <typename Key, typename V>
-bool TTrie<Key, V>::empty() const noexcept {
+bool Trie<Key, V>::empty() const noexcept {
   return m_size == 0;
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::size_type TTrie<Key, V>::size() const noexcept {
+typename Trie<Key, V>::size_type Trie<Key, V>::size() const noexcept {
   return m_size;
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::iterator TTrie<Key, V>::begin() noexcept {
+typename Trie<Key, V>::iterator Trie<Key, V>::begin() noexcept {
   return iterator(m_root.get());
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::iterator TTrie<Key, V>::end() noexcept {
+typename Trie<Key, V>::iterator Trie<Key, V>::end() noexcept {
   return iterator();
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::const_iterator TTrie<Key, V>::begin() const noexcept {
+typename Trie<Key, V>::const_iterator Trie<Key, V>::begin() const noexcept {
   return const_iterator(m_root.get());
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::const_iterator TTrie<Key, V>::end() const noexcept {
+typename Trie<Key, V>::const_iterator Trie<Key, V>::end() const noexcept {
   return const_iterator();
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::const_iterator TTrie<Key, V>::cbegin() const noexcept {
+typename Trie<Key, V>::const_iterator Trie<Key, V>::cbegin() const noexcept {
   return const_iterator(m_root.get());
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::const_iterator TTrie<Key, V>::cend() noexcept {
+typename Trie<Key, V>::const_iterator Trie<Key, V>::cend() const noexcept {
   return const_iterator();
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::iterator TTrie<Key, V>::insert(const key_type& key, const value_type& value) {
+typename Trie<Key, V>::iterator Trie<Key, V>::insert(const key_type& key, const value_type& value) {
   return insert_impl(key, value, true);
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::iterator TTrie<Key, V>::insert(const key_type& key, value_type&& value) {
+typename Trie<Key, V>::iterator Trie<Key, V>::insert(const key_type& key, value_type&& value) {
   return insert_impl(key, std::move(value), true);
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::iterator TTrie<Key, V>::erase(const key_type& key) {
+typename Trie<Key, V>::iterator Trie<Key, V>::erase(const key_type& key) {
   iterator next = find(key);
   if (next == end()) {
     return end();
@@ -269,36 +269,36 @@ TTrie<Key, V>::iterator TTrie<Key, V>::erase(const key_type& key) {
 }
 
 template <typename Key, typename V>
-void TTrie<Key, V>::clear() noexcept {
+void Trie<Key, V>::clear() noexcept {
   m_root.reset();
   m_size = 0;
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::value_type& TTrie<Key, V>::at(const key_type& key) {
+typename Trie<Key, V>::value_type& Trie<Key, V>::at(const key_type& key) {
   Node* node = find_node_ptr(key);
   if (node == nullptr) {
-    throw std::out_of_range("TTrie::at: key not found");
+    throw std::out_of_range("Trie::at: key not found");
   }
   return node->value.value();
 }
 
 template <typename Key, typename V>
-const TTrie<Key, V>::value_type& TTrie<Key, V>::at(const key_type& key) const {
+const typename Trie<Key, V>::value_type& Trie<Key, V>::at(const key_type& key) const {
   const Node* node = find_node_ptr(key);
   if (node == nullptr) {
-    throw std::out_of_range("TTrie::at: key not found");
+    throw std::out_of_range("Trie::at: key not found");
   }
   return node->value.value();
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::value_type& TTrie<Key, V>::operator[](const key_type& key) {
+typename Trie<Key, V>::value_type& Trie<Key, V>::operator[](const key_type& key) {
   return insert_impl(key, value_type{}, false).value();
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::iterator TTrie<Key, V>::find(const key_type& key) {
+typename Trie<Key, V>::iterator Trie<Key, V>::find(const key_type& key) {
   Node* node = find_node_ptr(key);
   if (node == nullptr) {
     return end();
@@ -307,7 +307,7 @@ TTrie<Key, V>::iterator TTrie<Key, V>::find(const key_type& key) {
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::const_iterator TTrie<Key, V>::find(const key_type& key) const {
+typename Trie<Key, V>::const_iterator Trie<Key, V>::find(const key_type& key) const {
   const Node* node = find_node_ptr(key);
   if (node == nullptr) {
     return cend();
@@ -316,13 +316,13 @@ TTrie<Key, V>::const_iterator TTrie<Key, V>::find(const key_type& key) const {
 }
 
 template <typename Key, typename V>
-bool TTrie<Key, V>::contains(const key_type& key) const {
+bool Trie<Key, V>::contains(const key_type& key) const {
   return find_node_ptr(key) != nullptr;
 }
 
 template <typename Key, typename V>
 template <typename W>
-TTrie<Key, V>::iterator TTrie<Key, V>::insert_impl(const key_type& key, W&& value, bool overwrite) {
+typename Trie<Key, V>::iterator Trie<Key, V>::insert_impl(const key_type& key, W&& value, bool overwrite) {
   if (m_root == nullptr) {
     m_root = std::make_unique<Node>();
   }
@@ -348,7 +348,7 @@ TTrie<Key, V>::iterator TTrie<Key, V>::insert_impl(const key_type& key, W&& valu
 }
 
 template <typename Key, typename V>
-TTrie<Key, V>::Node* TTrie<Key, V>::find_node_ptr(const key_type& key) {
+typename Trie<Key, V>::Node* Trie<Key, V>::find_node_ptr(const key_type& key) {
   if (m_root == nullptr) {
     return nullptr;
   }
@@ -367,7 +367,7 @@ TTrie<Key, V>::Node* TTrie<Key, V>::find_node_ptr(const key_type& key) {
 }
 
 template <typename Key, typename V>
-const TTrie<Key, V>::Node* TTrie<Key, V>::find_node_ptr(const key_type& key) const {
+const typename Trie<Key, V>::Node* Trie<Key, V>::find_node_ptr(const key_type& key) const {
   if (m_root == nullptr) {
     return nullptr;
   }
@@ -386,7 +386,7 @@ const TTrie<Key, V>::Node* TTrie<Key, V>::find_node_ptr(const key_type& key) con
 }
 
 template <typename Key, typename V>
-bool TTrie<Key, V>::erase_impl(Node* node, const key_type& key, size_type depth) {
+bool Trie<Key, V>::erase_impl(Node* node, const key_type& key, size_type depth) {
   if (node == nullptr) {
     return false;
   }
@@ -410,7 +410,7 @@ bool TTrie<Key, V>::erase_impl(Node* node, const key_type& key, size_type depth)
 }
 
 template <typename Key, typename V>
-std::unique_ptr<typename TTrie<Key, V>::Node> TTrie<Key, V>::clone_impl(const Node* source) {
+std::unique_ptr<typename Trie<Key, V>::Node> Trie<Key, V>::clone_impl(const Node* source) {
   if (source == nullptr) {
     return nullptr;
   }
@@ -418,7 +418,7 @@ std::unique_ptr<typename TTrie<Key, V>::Node> TTrie<Key, V>::clone_impl(const No
   struct Frame {
     const Node* source;
     Node* dest;
-    std::map<symbol_type, std::unique_ptr<Node>>::const_iterator it;
+    typename std::map<symbol_type, std::unique_ptr<Node>>::const_iterator it;
   };
 
   auto new_root = std::make_unique<Node>();

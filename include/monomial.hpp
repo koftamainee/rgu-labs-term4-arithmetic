@@ -1,11 +1,13 @@
-#ifndef RGU_LABS_TERM4_ARITHMETIC_MONOMIAL_HPP
-#define RGU_LABS_TERM4_ARITHMETIC_MONOMIAL_HPP
+#pragma once
 
 #include <numeric>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
-class Monomial {
+#include "latex_serializable.hpp"
+
+class Monomial : public ILatexSerializable {
 public:
     using exponent_type  = int;
     using container      = std::vector<exponent_type>;
@@ -94,8 +96,23 @@ public:
         return !(*this < other);
     }
 
+    std::string to_latex() const override {
+        std::string result;
+        for (size_type i = 0; i < m_exponents.size(); ++i) {
+            if (m_exponents[i] == 0) {
+                continue;
+            }
+            result += "x_{" + std::to_string(i + 1) + "}";
+            if (m_exponents[i] != 1) {
+                result += "^{" + std::to_string(m_exponents[i]) + "}";
+            }
+        }
+        if (result.empty()) {
+            return "1";
+        }
+        return result;
+    }
+
 private:
     container m_exponents;
 };
-
-#endif //RGU_LABS_TERM4_ARITHMETIC_MONOMIAL_HPP

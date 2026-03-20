@@ -7,264 +7,363 @@
 #include <string>
 #include <vector>
 
-class Matrix {
-private:
-    std::vector<std::vector<double>> data_;
-    size_t rows_{};
-    size_t cols_{};
+#include "latex_serializable.hpp"
+#include "utils.hpp"
 
-    void check_same_size(const Matrix &other, const std::string &op) const {
-        if (rows_ != other.rows_ || cols_ != other.cols_)
-            throw std::runtime_error("Matrix size mismatch in operation: " + op);
-    }
-
-    void check_square(const std::string &op) const {
-        if (rows_ != cols_)
-            throw std::runtime_error("Matrix must be square for operation: " + op);
-    }
-
+template <typename T>
+class Matrix : public ILatexSerializable {
 public:
-    Matrix() = default;
+  using value_type = T;
+  using size_type = std::size_t;
 
-    Matrix(size_t rows, size_t cols)
-        : data_(rows, std::vector<double>(cols, 0.0)), rows_(rows), cols_(cols) {}
+  Matrix() = default;
 
-    Matrix(const std::vector<std::vector<double>> &data)
-        : data_(data),
-          rows_(data.size()),
-          cols_(data.empty() ? 0 : data[0].size()) {
-        for (const auto &row : data_)
-            if (row.size() != cols_)
-                throw std::runtime_error("Inconsistent row sizes in matrix");
+  Matrix(size_type rows, size_type cols)
+    : m_data(rows, std::vector<T>(cols, T{})), m_rows(rows), m_cols(cols) {}
+
+  explicit Matrix(std::vector<std::vector<T>> data)
+    : m_data(std::move(data)),
+      m_rows(m_data.size()),
+      m_cols(m_data.empty() ? 0 : m_data[0].size()) {
+    for (const auto& row : m_data) {
+      if (row.size() != m_cols) {
+        throw std::runtime_error("Matrix: inconsistent row sizes");
+      }
     }
+  }
 
-    Matrix(const Matrix &)            = default;
-    Matrix(Matrix &&) noexcept        = default;
-    Matrix &operator=(const Matrix &) = default;
-    Matrix &operator=(Matrix &&)      = default;
-    ~Matrix()                         = default;
+  Matrix(const Matrix&) = default;
+  Matrix(Matrix&&) noexcept = default;
+  Matrix& operator=(const Matrix&) = default;
+  Matrix& operator=(Matrix&&) = default;
+  ~Matrix() = default;
 
-    size_t rows() const noexcept { return rows_; }
-    size_t cols() const noexcept { return cols_; }
+  size_type rows() const noexcept { return m_rows; }
+  size_type cols() const noexcept { return m_cols; }
 
-    double &at(size_t row, size_t col) { return data_.at(row).at(col); }
-    const double &at(size_t row, size_t col) const { return data_.at(row).at(col); }
+  T& at(size_type row, size_type col) { return m_data.at(row).at(col); }
+  const T& at(size_type row, size_type col) const { return m_data.at(row).at(col); }
 
-    Matrix &operator+=(const Matrix &other) {
-        check_same_size(other, "+=");
-        for (size_t i = 0; i < rows_; ++i)
-            for (size_t j = 0; j < cols_; ++j)
-                data_[i][j] += other.data_[i][j];
-        return *this;
+  Matrix& operator+=(const Matrix& other) {
+    check_same_size(other, "+=");
+    for (size_type i = 0; i < m_rows; ++i) {
+      for (size_type j = 0; j < m_cols; ++j) {
+        m_data[i][j] += other.m_data[i][j];
+      }
     }
+    return *this;
+  }
 
-    Matrix &operator-=(const Matrix &other) {
-        check_same_size(other, "-=");
-        for (size_t i = 0; i < rows_; ++i)
-            for (size_t j = 0; j < cols_; ++j)
-                data_[i][j] -= other.data_[i][j];
-        return *this;
+  Matrix& operator-=(const Matrix& other) {
+    check_same_size(other, "-=");
+    for (size_type i = 0; i < m_rows; ++i) {
+      for (size_type j = 0; j < m_cols; ++j) {
+        m_data[i][j] -= other.m_data[i][j];
+      }
     }
+    return *this;
+  }
 
-    Matrix &operator*=(double scalar) {
-        for (size_t i = 0; i < rows_; ++i)
-            for (size_t j = 0; j < cols_; ++j)
-                data_[i][j] *= scalar;
-        return *this;
+  Matrix& operator*=(const T& scalar) {
+    for (size_type i = 0; i < m_rows; ++i) {
+      for (size_type j = 0; j < m_cols; ++j) {
+        m_data[i][j] *= scalar;
+      }
     }
+    return *this;
+  }
 
-    Matrix &operator*=(const Matrix &other) {
-        if (cols_ != other.rows_)
-            throw std::runtime_error("Matrix multiplication dimension mismatch");
-        Matrix result(rows_, other.cols_);
-        for (size_t i = 0; i < rows_; ++i)
-            for (size_t j = 0; j < other.cols_; ++j)
-                for (size_t k = 0; k < cols_; ++k)
-                    result.data_[i][j] += data_[i][k] * other.data_[k][j];
-        *this = std::move(result);
-        return *this;
+  Matrix& operator*=(const Matrix& other) {
+    if (m_cols != other.m_rows) {
+      throw std::runtime_error("Matrix: multiplication dimension mismatch");
     }
-
-    Matrix operator+(const Matrix &other) const { Matrix r = *this; r += other; return r; }
-    Matrix operator-(const Matrix &other) const { Matrix r = *this; r -= other; return r; }
-    Matrix operator*(double scalar)        const { Matrix r = *this; r *= scalar; return r; }
-    Matrix operator*(const Matrix &other)  const { Matrix r = *this; r *= other;  return r; }
-
-    friend Matrix operator*(double scalar, const Matrix &m) { return m * scalar; }
-
-    bool operator==(const Matrix &other) const { return data_ == other.data_; }
-    bool operator!=(const Matrix &other) const { return !(*this == other); }
-
-    Matrix transpose() const {
-        Matrix result(cols_, rows_);
-        for (size_t i = 0; i < rows_; ++i)
-            for (size_t j = 0; j < cols_; ++j)
-                result.at(j, i) = data_[i][j];
-        return result;
-    }
-
-    double determinant() const {
-        check_square("determinant");
-        size_t n = rows_;
-        Matrix temp = *this;
-        double det = 1.0;
-        for (size_t i = 0; i < n; ++i) {
-            size_t pivot = i;
-            while (pivot < n && temp.data_[pivot][i] == 0.0) ++pivot;
-            if (pivot == n) return 0.0;
-            if (pivot != i) {
-                std::swap(temp.data_[i], temp.data_[pivot]);
-                det = -det;
-            }
-            det *= temp.data_[i][i];
-            for (size_t j = i + 1; j < n; ++j) {
-                double factor = temp.data_[j][i] / temp.data_[i][i];
-                for (size_t k = i; k < n; ++k)
-                    temp.data_[j][k] -= factor * temp.data_[i][k];
-            }
+    Matrix result(m_rows, other.m_cols);
+    for (size_type i = 0; i < m_rows; ++i) {
+      for (size_type j = 0; j < other.m_cols; ++j) {
+        for (size_type k = 0; k < m_cols; ++k) {
+          result.m_data[i][j] += m_data[i][k] * other.m_data[k][j];
         }
-        return det;
+      }
     }
+    *this = std::move(result);
+    return *this;
+  }
 
-    Matrix inverse() const {
-        check_square("inverse");
-        size_t n = rows_;
-        Matrix a = *this;
-        Matrix inv(n, n);
-        for (size_t i = 0; i < n; ++i) inv.data_[i][i] = 1.0;
-        for (size_t i = 0; i < n; ++i) {
-            size_t pivot = i;
-            while (pivot < n && a.data_[pivot][i] == 0.0) ++pivot;
-            if (pivot == n) throw std::runtime_error("Singular matrix");
-            if (pivot != i) {
-                std::swap(a.data_[i], a.data_[pivot]);
-                std::swap(inv.data_[i], inv.data_[pivot]);
-            }
-            double div = a.data_[i][i];
-            for (size_t j = 0; j < n; ++j) {
-                a.data_[i][j]   /= div;
-                inv.data_[i][j] /= div;
-            }
-            for (size_t j = 0; j < n; ++j) {
-                if (j == i) continue;
-                double factor = a.data_[j][i];
-                for (size_t k = 0; k < n; ++k) {
-                    a.data_[j][k]   -= factor * a.data_[i][k];
-                    inv.data_[j][k] -= factor * inv.data_[i][k];
-                }
-            }
-        }
-        return inv;
-    }
+  Matrix operator+(const Matrix& other) const {
+    Matrix r = *this;
+    r += other;
+    return r;
+  }
 
-    std::vector<double> solve_gauss(const std::vector<double> &b) const {
-        check_square("solve_gauss");
-        size_t n = rows_;
-        Matrix a = *this;
-        std::vector<double> x = b;
-        for (size_t i = 0; i < n; ++i) {
-            size_t pivot = i;
-            while (pivot < n && a.data_[pivot][i] == 0.0) ++pivot;
-            if (pivot == n) throw std::runtime_error("No unique solution");
-            if (pivot != i) {
-                std::swap(a.data_[i], a.data_[pivot]);
-                std::swap(x[i], x[pivot]);
-            }
-            for (size_t j = i + 1; j < n; ++j) {
-                double factor = a.data_[j][i] / a.data_[i][i];
-                for (size_t k = i; k < n; ++k)
-                    a.data_[j][k] -= factor * a.data_[i][k];
-                x[j] -= factor * x[i];
-            }
-        }
-        std::vector<double> result(n);
-        for (int i = static_cast<int>(n) - 1; i >= 0; --i) {
-            double sum = x[i];
-            for (size_t j = i + 1; j < n; ++j)
-                sum -= a.data_[i][j] * result[j];
-            result[i] = sum / a.data_[i][i];
-        }
-        return result;
-    }
+  Matrix operator-(const Matrix& other) const {
+    Matrix r = *this;
+    r -= other;
+    return r;
+  }
 
-    std::vector<double> solve_gauss_jordan(const std::vector<double> &b) const {
-        check_square("solve_gauss_jordan");
-        size_t n = rows_;
-        Matrix a = *this;
-        std::vector<double> x = b;
-        for (size_t i = 0; i < n; ++i) {
-            size_t pivot = i;
-            while (pivot < n && a.data_[pivot][i] == 0.0) ++pivot;
-            if (pivot == n) throw std::runtime_error("No unique solution");
-            if (pivot != i) {
-                std::swap(a.data_[i], a.data_[pivot]);
-                std::swap(x[i], x[pivot]);
-            }
-            double div = a.data_[i][i];
-            for (size_t j = 0; j < n; ++j) a.data_[i][j] /= div;
-            x[i] /= div;
-            for (size_t j = 0; j < n; ++j) {
-                if (j == i) continue;
-                double factor = a.data_[j][i];
-                for (size_t k = 0; k < n; ++k)
-                    a.data_[j][k] -= factor * a.data_[i][k];
-                x[j] -= factor * x[i];
-            }
-        }
-        return x;
-    }
+  Matrix operator*(const T& scalar) const {
+    Matrix r = *this;
+    r *= scalar;
+    return r;
+  }
 
-    size_t rank() const {
-        Matrix temp = *this;
-        size_t rnk = 0;
-        for (size_t col = 0, row = 0; col < cols_ && row < rows_; ++col) {
-            size_t sel = row;
-            for (size_t i = row + 1; i < rows_; ++i)
-                if (std::fabs(temp.data_[i][col]) > std::fabs(temp.data_[sel][col]))
-                    sel = i;
-            if (std::fabs(temp.data_[sel][col]) < 1e-10) continue;
-            if (sel != row) std::swap(temp.data_[row], temp.data_[sel]);
-            for (size_t i = row + 1; i < rows_; ++i) {
-                double factor = temp.data_[i][col] / temp.data_[row][col];
-                for (size_t j = col; j < cols_; ++j)
-                    temp.data_[i][j] -= factor * temp.data_[row][j];
-            }
-            ++rnk;
-            ++row;
-        }
-        return rnk;
-    }
+  Matrix operator*(const Matrix& other) const {
+    Matrix r = *this;
+    r *= other;
+    return r;
+  }
 
-    static size_t span_dimension(const std::vector<std::vector<double>> &vectors) {
-        Matrix m(vectors.size(), vectors[0].size());
-        for (size_t i = 0; i < vectors.size(); ++i)
-            m.data_[i] = vectors[i];
-        return m.rank();
-    }
+  friend Matrix operator*(const T& scalar, const Matrix& m) { return m * scalar; }
 
-    static bool is_in_span(const std::vector<std::vector<double>> &basis,
-                            const std::vector<double> &vector) {
-        Matrix m(basis.size(), basis[0].size());
-        for (size_t i = 0; i < basis.size(); ++i)
-            m.data_[i] = basis[i];
-        try {
-            m.solve_gauss(vector);
-            return true;
-        } catch (...) {
-            return false;
-        }
-    }
+  bool operator==(const Matrix& other) const { return m_data == other.m_data; }
+  bool operator!=(const Matrix& other) const { return !(*this == other); }
 
-    std::string to_string() const {
-        std::string result;
-        for (const auto &row : data_) {
-            result += "(";
-            for (size_t j = 0; j < row.size(); ++j) {
-                result += std::to_string(row[j]);
-                if (j + 1 < row.size()) result += " ";
-            }
-            result += ") ";
-        }
-        return result;
+  Matrix transpose() const {
+    Matrix result(m_cols, m_rows);
+    for (size_type i = 0; i < m_rows; ++i) {
+      for (size_type j = 0; j < m_cols; ++j) {
+        result.at(j, i) = m_data[i][j];
+      }
     }
+    return result;
+  }
+
+  T determinant() const {
+    check_square("determinant");
+    size_type n = m_rows;
+    Matrix temp = *this;
+    T det = T{1};
+    for (size_type i = 0; i < n; ++i) {
+      size_type pivot = i;
+      while (pivot < n && temp.m_data[pivot][i] == T{}) {
+        ++pivot;
+      }
+      if (pivot == n) {
+        return T{};
+      }
+      if (pivot != i) {
+        std::swap(temp.m_data[i], temp.m_data[pivot]);
+        det = det * T{-1};
+      }
+      det = det * temp.m_data[i][i];
+      for (size_type j = i + 1; j < n; ++j) {
+        T factor = temp.m_data[j][i] / temp.m_data[i][i];
+        for (size_type k = i; k < n; ++k) {
+          temp.m_data[j][k] -= factor * temp.m_data[i][k];
+        }
+      }
+    }
+    return det;
+  }
+
+  Matrix inverse() const {
+    check_square("inverse");
+    size_type n = m_rows;
+    Matrix a = *this;
+    Matrix inv(n, n);
+    for (size_type i = 0; i < n; ++i) {
+      inv.m_data[i][i] = T{1};
+    }
+    for (size_type i = 0; i < n; ++i) {
+      size_type pivot = i;
+      while (pivot < n && a.m_data[pivot][i] == T{}) {
+        ++pivot;
+      }
+      if (pivot == n) {
+        throw std::runtime_error("Matrix: singular matrix");
+      }
+      if (pivot != i) {
+        std::swap(a.m_data[i], a.m_data[pivot]);
+        std::swap(inv.m_data[i], inv.m_data[pivot]);
+      }
+      T div = a.m_data[i][i];
+      for (size_type j = 0; j < n; ++j) {
+        a.m_data[i][j] = a.m_data[i][j] / div;
+        inv.m_data[i][j] = inv.m_data[i][j] / div;
+      }
+      for (size_type j = 0; j < n; ++j) {
+        if (j == i) {
+          continue;
+        }
+        T factor = a.m_data[j][i];
+        for (size_type k = 0; k < n; ++k) {
+          a.m_data[j][k] -= factor * a.m_data[i][k];
+          inv.m_data[j][k] -= factor * inv.m_data[i][k];
+        }
+      }
+    }
+    return inv;
+  }
+
+  std::vector<T> solve_gauss(const std::vector<T>& b) const {
+    check_square("solve_gauss");
+    size_type n = m_rows;
+    Matrix a = *this;
+    std::vector<T> x = b;
+    for (size_type i = 0; i < n; ++i) {
+      size_type pivot = i;
+      while (pivot < n && a.m_data[pivot][i] == T{}) {
+        ++pivot;
+      }
+      if (pivot == n) {
+        throw std::runtime_error("Matrix: no unique solution");
+      }
+      if (pivot != i) {
+        std::swap(a.m_data[i], a.m_data[pivot]);
+        std::swap(x[i], x[pivot]);
+      }
+      for (size_type j = i + 1; j < n; ++j) {
+        T factor = a.m_data[j][i] / a.m_data[i][i];
+        for (size_type k = i; k < n; ++k) {
+          a.m_data[j][k] -= factor * a.m_data[i][k];
+        }
+        x[j] -= factor * x[i];
+      }
+    }
+    std::vector<T> result(n);
+    for (int i = static_cast<int>(n) - 1; i >= 0; --i) {
+      T sum = x[i];
+      for (size_type j = i + 1; j < n; ++j) {
+        sum -= a.m_data[i][j] * result[j];
+      }
+      result[i] = sum / a.m_data[i][i];
+    }
+    return result;
+  }
+
+  std::vector<T> solve_gauss_jordan(const std::vector<T>& b) const {
+    check_square("solve_gauss_jordan");
+    size_type n = m_rows;
+    Matrix a = *this;
+    std::vector<T> x = b;
+    for (size_type i = 0; i < n; ++i) {
+      size_type pivot = i;
+      while (pivot < n && a.m_data[pivot][i] == T{}) {
+        ++pivot;
+      }
+      if (pivot == n) {
+        throw std::runtime_error("Matrix: no unique solution");
+      }
+      if (pivot != i) {
+        std::swap(a.m_data[i], a.m_data[pivot]);
+        std::swap(x[i], x[pivot]);
+      }
+      T div = a.m_data[i][i];
+      for (size_type j = 0; j < n; ++j) {
+        a.m_data[i][j] = a.m_data[i][j] / div;
+      }
+      x[i] = x[i] / div;
+      for (size_type j = 0; j < n; ++j) {
+        if (j == i) {
+          continue;
+        }
+        T factor = a.m_data[j][i];
+        for (size_type k = 0; k < n; ++k) {
+          a.m_data[j][k] -= factor * a.m_data[i][k];
+        }
+        x[j] -= factor * x[i];
+      }
+    }
+    return x;
+  }
+
+  size_type rank() const {
+    Matrix temp = *this;
+    size_type rnk = 0;
+    for (size_type col = 0, row = 0; col < m_cols && row < m_rows; ++col) {
+      size_type sel = row;
+      for (size_type i = row + 1; i < m_rows; ++i) {
+        if (std::abs(temp.m_data[i][col]) > std::abs(temp.m_data[sel][col])) {
+          sel = i;
+        }
+      }
+      if (std::abs(temp.m_data[sel][col]) < T{1e-10}) {
+        continue;
+      }
+      if (sel != row) {
+        std::swap(temp.m_data[row], temp.m_data[sel]);
+      }
+      for (size_type i = row + 1; i < m_rows; ++i) {
+        T factor = temp.m_data[i][col] / temp.m_data[row][col];
+        for (size_type j = col; j < m_cols; ++j) {
+          temp.m_data[i][j] -= factor * temp.m_data[row][j];
+        }
+      }
+      ++rnk;
+      ++row;
+    }
+    return rnk;
+  }
+
+  static size_type span_dimension(const std::vector<std::vector<T>>& vectors) {
+    Matrix m(vectors.size(), vectors[0].size());
+    for (size_type i = 0; i < vectors.size(); ++i) {
+      m.m_data[i] = vectors[i];
+    }
+    return m.rank();
+  }
+
+  static bool is_in_span(const std::vector<std::vector<T>>& basis,
+                         const std::vector<T>& vector) {
+    Matrix m(basis.size(), basis[0].size());
+    for (size_type i = 0; i < basis.size(); ++i) {
+      m.m_data[i] = basis[i];
+    }
+    try {
+      m.solve_gauss(vector);
+      return true;
+    }
+    catch (...) {
+      return false;
+    }
+  }
+
+  std::string to_string() const {
+    std::string result;
+    for (const auto& row : m_data) {
+      result += "(";
+      for (size_type j = 0; j < row.size(); ++j) {
+        result += to_str(row[j]);
+        if (j + 1 < row.size()) {
+          result += " ";
+        }
+      }
+      result += ") ";
+    }
+    return result;
+  }
+
+  std::string to_latex() const override {
+    std::string result = "\\begin{pmatrix}";
+    for (size_type i = 0; i < m_rows; ++i) {
+      for (size_type j = 0; j < m_cols; ++j) {
+        result += to_str(m_data[i][j]);
+        if (j + 1 < m_cols) {
+          result += " & ";
+        }
+      }
+      if (i + 1 < m_rows) {
+        result += " \\\\ ";
+      }
+    }
+    result += "\\end{pmatrix}";
+    return result;
+  }
+
+private:
+  void check_same_size(const Matrix& other, const std::string& op) const {
+    if (m_rows != other.m_rows || m_cols != other.m_cols) {
+      throw std::runtime_error("Matrix: size mismatch in operation: " + op);
+    }
+  }
+
+  void check_square(const std::string& op) const {
+    if (m_rows != m_cols) {
+      throw std::runtime_error("Matrix: must be square for operation: " + op);
+    }
+  }
+
+  std::vector<std::vector<T>> m_data;
+  size_type m_rows = 0;
+  size_type m_cols = 0;
 };

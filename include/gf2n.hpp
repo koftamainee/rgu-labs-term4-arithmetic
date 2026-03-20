@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <stdexcept>
 #include <string>
-#include "Polynomial1D.hpp"
 class GF2n final {
 public:
   using elem = uint64_t;

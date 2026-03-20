@@ -1,33 +1,43 @@
-#ifndef LIMIT_HPP
-#define LIMIT_HPP
+#pragma once
 
-#include "bigmath/bigfloat.hpp"
 #include <string>
+#include "latex_serializable.hpp"
 
 enum class LimitResult {
-  FINITE,
-  PLUS_INFINITY,
-  MINUS_INFINITY,
-  DOES_NOT_EXIST
+  Finite,
+  PlusInfinity,
+  MinusInfinity,
+  DoesNotExist
 };
 
-struct Limit {
-  LimitResult type;
-  bigfloat value;
+template <typename T>
+class Limit : public ILatexSerializable {
+public:
+  using value_type = T;
+
+  LimitResult result;
+  T value;
+
+  explicit Limit(LimitResult result, T value = T{})
+    : result(result), value(std::move(value)) {}
 
   std::string to_string() const {
-    switch (type) {
-    case LimitResult::FINITE:
-      return value.to_decimal();
-    case LimitResult::PLUS_INFINITY:
-      return "+inf";
-    case LimitResult::MINUS_INFINITY:
-      return "-inf";
-    case LimitResult::DOES_NOT_EXIST:
-      return "does not exist";
+    switch (result) {
+    case LimitResult::Finite: return value.to_decimal();
+    case LimitResult::PlusInfinity: return "+inf";
+    case LimitResult::MinusInfinity: return "-inf";
+    case LimitResult::DoesNotExist: return "does not exist";
     }
     return "unknown";
   }
-};
 
-#endif
+  std::string to_latex() const override {
+    switch (result) {
+    case LimitResult::Finite: return value.to_decimal();
+    case LimitResult::PlusInfinity: return "+\\infty";
+    case LimitResult::MinusInfinity: return "-\\infty";
+    case LimitResult::DoesNotExist: return "\\nexists";
+    }
+    return "\\text{unknown}";
+  }
+};

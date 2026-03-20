@@ -1,84 +1,84 @@
-#ifndef RGU_LABS_TERM4_ARITHMETIC_POLYNOMIAL_HPP
-#define RGU_LABS_TERM4_ARITHMETIC_POLYNOMIAL_HPP
+#pragma once
 
 #include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#include "TTrie.hpp"
+#include "trie.hpp"
 #include "monomial.hpp"
 #include "poly_ring.hpp"
+#include "utils.hpp"
+#include "latex_serializable.hpp"
 
 template <typename T>
-class TPolynomial {
+class Polynomial : public ILatexSerializable {
 public:
     using coeff_type = T;
-    using ring_ptr   = std::shared_ptr<const TPolyRing<T>>;
-    using monomial   = Monomial;
+    using ring_ptr   = std::shared_ptr<const PolyRing<T>>;
     using key_type   = Monomial::container;
     using size_type  = std::size_t;
     using point_type = std::vector<T>;
 
-    explicit TPolynomial(ring_ptr ring);
+    explicit Polynomial(ring_ptr ring);
 
     ring_ptr ring() const noexcept;
     size_type n_vars() const noexcept;
 
-    void set(const monomial& m, const T& coeff);
-    const T* get(const monomial& m) const;
+    void set(const Monomial& m, const T& coeff);
+    const T* get(const Monomial& m) const;
     bool is_zero() const noexcept;
 
-    TPolynomial& operator+=(const TPolynomial& other);
-    TPolynomial& operator-=(const TPolynomial& other);
-    TPolynomial& operator*=(const TPolynomial& other);
+    Polynomial& operator+=(const Polynomial& other);
+    Polynomial& operator-=(const Polynomial& other);
+    Polynomial& operator*=(const Polynomial& other);
 
-    TPolynomial operator+(const TPolynomial& other) const;
-    TPolynomial operator-(const TPolynomial& other) const;
-    TPolynomial operator*(const TPolynomial& other) const;
+    Polynomial operator+(const Polynomial& other) const;
+    Polynomial operator-(const Polynomial& other) const;
+    Polynomial operator*(const Polynomial& other) const;
 
-    std::vector<monomial> supp() const;
+    bool operator==(const Polynomial& other) const;
+    bool operator!=(const Polynomial& other) const;
 
-    bool operator==(const TPolynomial& other) const;
-    bool operator!=(const TPolynomial& other) const;
+    std::vector<Monomial> supp() const;
 
     T evaluate(const point_type& point) const;
 
     std::optional<int> homogeneous_degree() const;
-
-    TPolynomial homogeneous_component(int degree) const;
+    Polynomial homogeneous_component(int degree) const;
 
     std::string to_string() const;
+    std::string to_latex() const override;
 
 private:
-    void check_compat(const TPolynomial& other) const;
+    void check_compat(const Polynomial& other) const;
 
     ring_ptr m_ring;
-    TTrie<key_type, T> m_terms;
+    Trie<key_type, T> m_terms;
 };
 
 template <typename T>
-TPolynomial<T>::TPolynomial(ring_ptr ring)
+Polynomial<T>::Polynomial(ring_ptr ring)
     : m_ring(std::move(ring)) {
     if (m_ring == nullptr) {
-        throw std::invalid_argument("TPolynomial: ring must not be null");
+        throw std::invalid_argument("Polynomial: ring must not be null");
     }
 }
 
 template <typename T>
-typename TPolynomial<T>::ring_ptr TPolynomial<T>::ring() const noexcept {
+typename Polynomial<T>::ring_ptr Polynomial<T>::ring() const noexcept {
     return m_ring;
 }
 
 template <typename T>
-typename TPolynomial<T>::size_type TPolynomial<T>::n_vars() const noexcept {
+typename Polynomial<T>::size_type Polynomial<T>::n_vars() const noexcept {
     return m_ring->n_vars();
 }
 
 template <typename T>
-void TPolynomial<T>::set(const monomial& m, const T& coeff) {
+void Polynomial<T>::set(const Monomial& m, const T& coeff) {
     if (m.n_vars() != n_vars()) {
-        throw std::invalid_argument("TPolynomial::set: n_vars mismatch");
+        throw std::invalid_argument("Polynomial::set: n_vars mismatch");
     }
     if (coeff == T{}) {
         m_terms.erase(m.exponents());
@@ -88,9 +88,9 @@ void TPolynomial<T>::set(const monomial& m, const T& coeff) {
 }
 
 template <typename T>
-const T* TPolynomial<T>::get(const monomial& m) const {
+const T* Polynomial<T>::get(const Monomial& m) const {
     if (m.n_vars() != n_vars()) {
-        throw std::invalid_argument("TPolynomial::get: n_vars mismatch");
+        throw std::invalid_argument("Polynomial::get: n_vars mismatch");
     }
     auto it = m_terms.find(m.exponents());
     if (it == m_terms.cend()) {
@@ -100,19 +100,12 @@ const T* TPolynomial<T>::get(const monomial& m) const {
 }
 
 template <typename T>
-bool TPolynomial<T>::is_zero() const noexcept {
+bool Polynomial<T>::is_zero() const noexcept {
     return m_terms.empty();
 }
 
 template <typename T>
-void TPolynomial<T>::check_compat(const TPolynomial& other) const {
-    if (m_ring != other.m_ring) {
-        throw std::invalid_argument("TPolynomial: ring mismatch");
-    }
-}
-
-template <typename T>
-TPolynomial<T>& TPolynomial<T>::operator+=(const TPolynomial& other) {
+Polynomial<T>& Polynomial<T>::operator+=(const Polynomial& other) {
     check_compat(other);
     for (const auto& elem : other.m_terms) {
         key_type key = elem.key;
@@ -129,7 +122,7 @@ TPolynomial<T>& TPolynomial<T>::operator+=(const TPolynomial& other) {
 }
 
 template <typename T>
-TPolynomial<T>& TPolynomial<T>::operator-=(const TPolynomial& other) {
+Polynomial<T>& Polynomial<T>::operator-=(const Polynomial& other) {
     check_compat(other);
     for (const auto& elem : other.m_terms) {
         key_type key = elem.key;
@@ -146,9 +139,9 @@ TPolynomial<T>& TPolynomial<T>::operator-=(const TPolynomial& other) {
 }
 
 template <typename T>
-TPolynomial<T>& TPolynomial<T>::operator*=(const TPolynomial& other) {
+Polynomial<T>& Polynomial<T>::operator*=(const Polynomial& other) {
     check_compat(other);
-    TPolynomial result(m_ring);
+    Polynomial result(m_ring);
     for (const auto& a : m_terms) {
         for (const auto& b : other.m_terms) {
             key_type key(n_vars());
@@ -171,37 +164,28 @@ TPolynomial<T>& TPolynomial<T>::operator*=(const TPolynomial& other) {
 }
 
 template <typename T>
-TPolynomial<T> TPolynomial<T>::operator+(const TPolynomial& other) const {
-    TPolynomial result = *this;
+Polynomial<T> Polynomial<T>::operator+(const Polynomial& other) const {
+    Polynomial result = *this;
     result += other;
     return result;
 }
 
 template <typename T>
-TPolynomial<T> TPolynomial<T>::operator-(const TPolynomial& other) const {
-    TPolynomial result = *this;
+Polynomial<T> Polynomial<T>::operator-(const Polynomial& other) const {
+    Polynomial result = *this;
     result -= other;
     return result;
 }
 
 template <typename T>
-TPolynomial<T> TPolynomial<T>::operator*(const TPolynomial& other) const {
-    TPolynomial result = *this;
+Polynomial<T> Polynomial<T>::operator*(const Polynomial& other) const {
+    Polynomial result = *this;
     result *= other;
     return result;
 }
 
 template <typename T>
-std::vector<Monomial> TPolynomial<T>::supp() const {
-    std::vector<monomial> result;
-    for (const auto& elem : m_terms) {
-        result.emplace_back(elem.key);
-    }
-    return result;
-}
-
-template <typename T>
-bool TPolynomial<T>::operator==(const TPolynomial& other) const {
+bool Polynomial<T>::operator==(const Polynomial& other) const {
     check_compat(other);
     if (m_terms.size() != other.m_terms.size()) {
         return false;
@@ -219,14 +203,23 @@ bool TPolynomial<T>::operator==(const TPolynomial& other) const {
 }
 
 template <typename T>
-bool TPolynomial<T>::operator!=(const TPolynomial& other) const {
+bool Polynomial<T>::operator!=(const Polynomial& other) const {
     return !(*this == other);
 }
 
 template <typename T>
-T TPolynomial<T>::evaluate(const point_type& point) const {
+std::vector<Monomial> Polynomial<T>::supp() const {
+    std::vector<Monomial> result;
+    for (const auto& elem : m_terms) {
+        result.emplace_back(elem.key);
+    }
+    return result;
+}
+
+template <typename T>
+T Polynomial<T>::evaluate(const point_type& point) const {
     if (point.size() != n_vars()) {
-        throw std::invalid_argument("TPolynomial::evaluate: point size mismatch");
+        throw std::invalid_argument("Polynomial::evaluate: point size mismatch");
     }
     T result{};
     for (const auto& elem : m_terms) {
@@ -242,7 +235,7 @@ T TPolynomial<T>::evaluate(const point_type& point) const {
 }
 
 template <typename T>
-std::optional<int> TPolynomial<T>::homogeneous_degree() const {
+std::optional<int> Polynomial<T>::homogeneous_degree() const {
     if (m_terms.empty()) {
         return 0;
     }
@@ -262,8 +255,8 @@ std::optional<int> TPolynomial<T>::homogeneous_degree() const {
 }
 
 template <typename T>
-TPolynomial<T> TPolynomial<T>::homogeneous_component(int degree) const {
-    TPolynomial result(m_ring);
+Polynomial<T> Polynomial<T>::homogeneous_component(int degree) const {
+    Polynomial result(m_ring);
     for (const auto& elem : m_terms) {
         int d = 0;
         for (size_type i = 0; i < n_vars(); ++i) {
@@ -277,7 +270,7 @@ TPolynomial<T> TPolynomial<T>::homogeneous_component(int degree) const {
 }
 
 template <typename T>
-std::string TPolynomial<T>::to_string() const {
+std::string Polynomial<T>::to_string() const {
     if (m_terms.empty()) {
         return "0";
     }
@@ -291,8 +284,8 @@ std::string TPolynomial<T>::to_string() const {
                 break;
             }
         }
-        std::string coeff_str = elem.value.get_str();
-        bool negative = coeff_str[0] == '-';
+        std::string coeff_str = to_str(elem.value);
+        bool negative = !coeff_str.empty() && coeff_str[0] == '-';
         if (!first) {
             result += negative ? " - " : " + ";
         } else if (negative) {
@@ -315,4 +308,48 @@ std::string TPolynomial<T>::to_string() const {
     return result;
 }
 
-#endif //RGU_LABS_TERM4_ARITHMETIC_POLYNOMIAL_HPP
+template <typename T>
+std::string Polynomial<T>::to_latex() const {
+    if (m_terms.empty()) {
+        return "0";
+    }
+    std::string result;
+    bool first = true;
+    for (const auto& elem : m_terms) {
+        bool has_vars = false;
+        for (size_type i = 0; i < n_vars(); ++i) {
+            if (elem.key[i] != 0) {
+                has_vars = true;
+                break;
+            }
+        }
+        std::string coeff_str = to_str(elem.value);
+        bool negative = !coeff_str.empty() && coeff_str[0] == '-';
+        if (!first) {
+            result += negative ? " - " : " + ";
+        } else if (negative) {
+            result += "-";
+        }
+        first = false;
+        std::string abs_coeff_str = negative ? coeff_str.substr(1) : coeff_str;
+        if (!has_vars || abs_coeff_str != "1") {
+            result += abs_coeff_str;
+        }
+        for (size_type i = 0; i < n_vars(); ++i) {
+            if (elem.key[i] != 0) {
+                result += m_ring->var_name(i);
+                if (elem.key[i] != 1) {
+                    result += "^{" + std::to_string(elem.key[i]) + "}";
+                }
+            }
+        }
+    }
+    return result;
+}
+
+template <typename T>
+void Polynomial<T>::check_compat(const Polynomial& other) const {
+    if (m_ring != other.m_ring) {
+        throw std::invalid_argument("Polynomial::check_compat: ring mismatch");
+    }
+}

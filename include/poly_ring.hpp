@@ -1,5 +1,4 @@
-#ifndef RGU_LABS_TERM4_ARITHMETIC_POLY_RING_HPP
-#define RGU_LABS_TERM4_ARITHMETIC_POLY_RING_HPP
+#pragma once
 
 #include <memory>
 #include <stdexcept>
@@ -7,13 +6,13 @@
 #include <vector>
 
 template <typename T>
-class TPolyRing {
+class PolyRing {
 public:
   using coeff_type = T;
-  using size_type  = std::size_t;
+  using size_type = std::size_t;
 
-  explicit TPolyRing(std::vector<std::string> var_names)
-      : m_var_names(std::move(var_names)) {
+  explicit PolyRing(std::vector<std::string> var_names)
+    : m_var_names(std::move(var_names)) {
     if (m_var_names.empty()) {
       throw std::invalid_argument("PolyRing: var_names must not be empty");
     }
@@ -30,11 +29,11 @@ public:
 
   const std::vector<std::string>& var_names() const noexcept { return m_var_names; }
 
-  bool operator==(const TPolyRing& other) const noexcept {
+  bool operator==(const PolyRing& other) const noexcept {
     return m_var_names == other.m_var_names;
   }
 
-  bool operator!=(const TPolyRing& other) const noexcept {
+  bool operator!=(const PolyRing& other) const noexcept {
     return !(*this == other);
   }
 
@@ -43,8 +42,6 @@ private:
 };
 
 template <typename T>
-std::shared_ptr<const TPolyRing<T>> make_ring(std::vector<std::string> var_names) {
-  return std::make_shared<const TPolyRing<T>>(std::move(var_names));
+std::shared_ptr<const PolyRing<T>> make_ring(std::vector<std::string> var_names) {
+  return std::make_shared<const PolyRing<T>>(std::move(var_names));
 }
-
-#endif //RGU_LABS_TERM4_ARITHMETIC_POLY_RING_HPP

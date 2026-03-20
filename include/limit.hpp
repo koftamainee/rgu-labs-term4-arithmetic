@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "latex_serializable.hpp"
 
 enum class LimitResult {
   Finite,
@@ -11,7 +10,7 @@ enum class LimitResult {
 };
 
 template <typename T>
-class Limit : public ILatexSerializable {
+class Limit{
 public:
   using value_type = T;
 
@@ -31,7 +30,7 @@ public:
     return "unknown";
   }
 
-  std::string to_latex() const override {
+  std::string to_latex() const {
     switch (result) {
     case LimitResult::Finite: return value.to_decimal();
     case LimitResult::PlusInfinity: return "+\\infty";

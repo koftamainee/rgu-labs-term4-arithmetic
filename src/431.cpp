@@ -3,32 +3,32 @@
 #include <gmpxx.h>
 
 #include "polynomial.hpp"
-#include "task.hpp"
-#include "latex_list.hpp"
+#include <chalkboard/task.h>
+#include <chalkboard/latex_list.h>
 
 inline Monomial make_mono(std::initializer_list<int> exps) {
   return Monomial(Monomial::container(exps));
 }
 
-void poly_demo(Reporter& r) {
-  auto R3 = make_ring<double>({"x", "y", "z"});
+void poly_demo(chalkboard::Reporter& r) {
+  auto R3 = make_ring<mpq_class>({"x", "y", "z"});
 
-  Polynomial<double> f(R3);
-  f.set(make_mono({2, 1, 0}), 3.0);
-  f.set(make_mono({1, 0, 1}), -2.0);
-  f.set(make_mono({0, 3, 0}), 0.5);
-  f.set(make_mono({0, 0, 0}), 5.0 / 3.0);
+  Polynomial<mpq_class> f(R3);
+  f.set(make_mono({2, 1, 0}), mpq_class(3));
+  f.set(make_mono({1, 0, 1}), mpq_class(-2));
+  f.set(make_mono({0, 3, 0}), mpq_class(1, 2));
+  f.set(make_mono({0, 0, 0}), mpq_class(5, 3));
 
-  Polynomial<double> g(R3);
-  g.set(make_mono({2, 1, 0}), 0.25);
-  g.set(make_mono({1, 0, 1}), 7.0 / 3.0);
-  g.set(make_mono({0, 0, 0}), -4.0);
+  Polynomial<mpq_class> g(R3);
+  g.set(make_mono({2, 1, 0}), mpq_class(1, 4));
+  g.set(make_mono({1, 0, 1}), mpq_class(7, 3));
+  g.set(make_mono({0, 0, 0}), mpq_class(-4));
 
-  Polynomial<double> h_hom(R3);
-  h_hom.set(make_mono({2, 1, 0}), 1.0);
-  h_hom.set(make_mono({0, 0, 3}), 3.5);
+  Polynomial<mpq_class> h_hom(R3);
+  h_hom.set(make_mono({2, 1, 0}), mpq_class(1));
+  h_hom.set(make_mono({0, 0, 3}), mpq_class(7, 2));
 
-  std::vector<double> A = {1.0, 2.0, -1.0};
+  std::vector<mpq_class> A = {1.0, 2.0, -1.0};
 
 
   using CQ = std::complex<mpq_class>;
@@ -74,7 +74,7 @@ void poly_demo(Reporter& r) {
 
   r.subsection("(b) " + r.math(r.mrm("supp") + "(f)"));
   {
-    auto lst = LatexList::itemize();
+    auto lst = chalkboard::LatexList::itemize();
     for (const auto& m : f.supp())
       lst.item("{}", m);
     r.add(lst);
@@ -109,7 +109,7 @@ void poly_demo(Reporter& r) {
 
   r.subsection("(b) " + r.math(r.mrm("supp") + "(p)"));
   {
-    auto lst = LatexList::itemize();
+    auto lst = chalkboard::LatexList::itemize();
     for (const auto& m : p.supp())
       lst.item("{}", m);
     r.add(lst);
@@ -136,7 +136,7 @@ void poly_demo(Reporter& r) {
 
   r.subsection("(b) " + r.math(r.mrm("supp") + "(r)"));
   {
-    auto lst = LatexList::itemize();
+    auto lst = chalkboard::LatexList::itemize();
     for (const auto& m : poly_r.supp())
       lst.item("{}", m);
     r.add(lst);
@@ -154,7 +154,7 @@ void poly_demo(Reporter& r) {
 }
 
 int main() {
-  Task task("Polynomial operations");
+  chalkboard::Task task("Polynomial operations");
   task.build_and_publish(poly_demo);
 
   return 0;

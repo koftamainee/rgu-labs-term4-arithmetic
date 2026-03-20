@@ -5,9 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "latex_serializable.hpp"
-
-class Monomial : public ILatexSerializable {
+class Monomial {
 public:
     using exponent_type  = int;
     using container      = std::vector<exponent_type>;
@@ -96,7 +94,7 @@ public:
         return !(*this < other);
     }
 
-    std::string to_latex() const override {
+    std::string to_latex() const {
         std::string result;
         for (size_type i = 0; i < m_exponents.size(); ++i) {
             if (m_exponents[i] == 0) {

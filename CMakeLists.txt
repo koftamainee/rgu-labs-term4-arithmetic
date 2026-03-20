@@ -12,12 +12,21 @@ endif()
 
 include_directories(include)
 
+include(FetchContent)
+
+FetchContent_Declare(
+        chalkboard
+        GIT_REPOSITORY https://github.com/koftamainee/chalkboard.git
+        GIT_TAG        master
+)
+FetchContent_MakeAvailable(chalkboard)
+
+set(CHALKBOARD_BUILD_VIEWER ON CACHE BOOL "" FORCE)
+
 file(GLOB TASK_SOURCES "src/*.cpp")
 foreach(src_file ${TASK_SOURCES})
     get_filename_component(task_name ${src_file} NAME_WE)
     add_executable(${task_name} ${src_file})
-    target_link_libraries(${task_name} gmp gmpxx)
+    target_link_libraries(${task_name} gmp gmpxx chalkboard::chalkboard)
     target_precompile_headers(${task_name} PRIVATE include/pch.hpp)
 endforeach()
-
-add_subdirectory(viewer)

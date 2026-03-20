@@ -7,11 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "latex_serializable.hpp"
-#include "utils.hpp"
-
 template <typename T>
-class Vector : public ILatexSerializable {
+class Vector {
 public:
   using value_type = T;
   using size_type = std::size_t;
@@ -294,7 +291,7 @@ public:
     return result;
   }
 
-  std::string to_latex() const override {
+  std::string to_latex() const{
     if (m_components.empty()) {
       return "\\begin{pmatrix}\\end{pmatrix}";
     }

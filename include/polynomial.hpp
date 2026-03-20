@@ -8,11 +8,9 @@
 #include "trie.hpp"
 #include "monomial.hpp"
 #include "poly_ring.hpp"
-#include "utils.hpp"
-#include "latex_serializable.hpp"
 
 template <typename T>
-class Polynomial : public ILatexSerializable {
+class Polynomial {
 public:
     using coeff_type = T;
     using ring_ptr   = std::shared_ptr<const PolyRing<T>>;
@@ -48,7 +46,7 @@ public:
     Polynomial homogeneous_component(int degree) const;
 
     std::string to_string() const;
-    std::string to_latex() const override;
+    std::string to_latex() const;
 
 private:
     void check_compat(const Polynomial& other) const;
@@ -284,7 +282,7 @@ std::string Polynomial<T>::to_string() const {
                 break;
             }
         }
-        std::string coeff_str = to_str(elem.value);
+        std::string coeff_str = std::format("{}", elem.value);
         bool negative = !coeff_str.empty() && coeff_str[0] == '-';
         if (!first) {
             result += negative ? " - " : " + ";
@@ -323,7 +321,7 @@ std::string Polynomial<T>::to_latex() const {
                 break;
             }
         }
-        std::string coeff_str = to_str(elem.value);
+        std::string coeff_str = std::format("{}", elem.value);
         bool negative = !coeff_str.empty() && coeff_str[0] == '-';
         if (!first) {
             result += negative ? " - " : " + ";

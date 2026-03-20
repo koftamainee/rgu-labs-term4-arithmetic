@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <string>
-#include "polynomial.hpp"
+#include "Polynomial1D.hpp"
 class GF2n final {
 public:
   using elem = uint64_t;
@@ -85,7 +85,7 @@ public:
     if (a >> 1)  {           deg += 1;  }
     return deg;
   }
-  elem from_polynomial(const Polynomial &p) {
+  elem from_polynomial(const Polynomial1D &p) {
     const VectorBF &v = p.coefficients();
     elem a = 0;
     const size_t n = v.dimension();
@@ -96,7 +96,7 @@ public:
     }
     return a;
   }
-  Polynomial to_polynomial(elem a) const {
+  Polynomial1D to_polynomial(elem a) const {
     std::vector<bigfloat> coeffs;
     // Include up to degree m_n (the leading term of the modulus)
     for (int i = 0; i <= m_n; i++) {

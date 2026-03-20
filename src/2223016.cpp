@@ -4,13 +4,13 @@
 #include <cmath>
 #include "fft.hpp"
 
-class Polynomial {
+class Polynomial1D {
 public:
   std::vector<double> coeffs;
 
-  explicit Polynomial(std::vector<double> c) : coeffs(std::move(c)) {}
+  explicit Polynomial1D(std::vector<double> c) : coeffs(std::move(c)) {}
 
-  Polynomial operator*(const Polynomial& other) const {
+  Polynomial1D operator*(const Polynomial1D& other) const {
     const size_t result_size = coeffs.size() + other.coeffs.size() - 1;
     size_t n = 1;
     while (n < result_size) { n <<= 1; }
@@ -28,17 +28,17 @@ public:
     for (size_t i = 0; i < result_size; ++i)
       result[i] = std::round(f[i].real() / static_cast<double>(n));
 
-    return Polynomial(result);
+    return Polynomial1D(result);
   }
 
   size_t dimension() const { return coeffs.size(); }
   double operator[](size_t i) const { return coeffs[i]; }
 };
 
-Polynomial set_to_poly(const std::vector<int>& S, int max_val) {
+Polynomial1D set_to_poly(const std::vector<int>& S, int max_val) {
   std::vector<double> coeffs(max_val + 1, 0.0);
   for (const int x : S) coeffs[x] = 1.0;
-  return Polynomial(coeffs);
+  return Polynomial1D(coeffs);
 }
 
 int main() {
@@ -47,9 +47,9 @@ int main() {
   const std::vector<int> B = {0, 2, 4, 6, 9};
   constexpr int max_val = 10 * n;
 
-  const Polynomial pA = set_to_poly(A, max_val);
-  const Polynomial pB = set_to_poly(B, max_val);
-  const Polynomial pC = pA * pB;
+  const Polynomial1D pA = set_to_poly(A, max_val);
+  const Polynomial1D pB = set_to_poly(B, max_val);
+  const Polynomial1D pC = pA * pB;
 
   std::cout << "Cartesian sum C = {x + y : x in A, y in B}\n\n";
   std::cout << "A = { ";

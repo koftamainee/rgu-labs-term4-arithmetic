@@ -1,7 +1,7 @@
 #include <bitset>
 
 #include "gf2n.hpp"
-#include "polynomial.hpp"
+#include "Polynomial1D.hpp"
 #include <iostream>
 
 int main() {
@@ -17,7 +17,7 @@ int main() {
   for (const auto a : elems) {
     std::cout << "Element a = 0b" << std::bitset<4>(a) << "\n";
 
-    const Polynomial p = gf.to_polynomial(a);
+    const Polynomial1D p = gf.to_polynomial(a);
     std::cout << "Polynomial form: " << p.to_string() << "\n";
 
     const GF2n::elem b = gf.from_polynomial(p);

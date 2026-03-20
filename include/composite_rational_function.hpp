@@ -3,18 +3,18 @@
 
 #include "bigmath/bigfloat.hpp"
 #include "limit.hpp"
-#include "polynomial.hpp"
+#include "Polynomial1D.hpp"
 #include "VectorBF.h"
 #include <stdexcept>
 #include <utility>
 
 class CompositeRationalFunction {
 private:
-  Polynomial f1_;
-  Polynomial s1_;
+  Polynomial1D f1_;
+  Polynomial1D s1_;
   size_t k_;
-  Polynomial f2_;
-  Polynomial s2_;
+  Polynomial1D f2_;
+  Polynomial1D s2_;
   size_t l_;
 
   static int sign(const bigfloat &x) {
@@ -36,9 +36,9 @@ private:
   }
 
 public:
-  CompositeRationalFunction(Polynomial f1, Polynomial s1,
-                            size_t k, Polynomial f2,
-                            Polynomial s2, size_t l)
+  CompositeRationalFunction(Polynomial1D f1, Polynomial1D s1,
+                            size_t k, Polynomial1D f2,
+                            Polynomial1D s2, size_t l)
     : f1_(std::move(f1)), s1_(std::move(s1)), k_(k), f2_(std::move(f2)), s2_(std::move(s2)), l_(l) {
     if (f2_.is_zero() || s2_.is_zero()) {
       throw std::invalid_argument("Denominator polynomials cannot be zero");

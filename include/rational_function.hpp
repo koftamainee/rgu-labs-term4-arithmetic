@@ -3,14 +3,14 @@
 
 #include "bigmath/bigfloat.hpp"
 #include "limit.hpp"
-#include "polynomial.hpp"
+#include "Polynomial1D.hpp"
 #include "VectorBF.h"
 #include <stdexcept>
 
 class RationalFunction {
 private:
-  Polynomial numerator_;
-  Polynomial denominator_;
+  Polynomial1D numerator_;
+  Polynomial1D denominator_;
 
   static int sign(const bigfloat &x) {
     if (x > 0) {
@@ -23,7 +23,7 @@ private:
   }
 
 public:
-  RationalFunction(const Polynomial &num, const Polynomial &den)
+  RationalFunction(const Polynomial1D &num, const Polynomial1D &den)
       : numerator_(num), denominator_(den) {
     if (denominator_.is_zero()) {
       throw std::invalid_argument("Denominator cannot be zero polynomial");
@@ -51,8 +51,8 @@ public:
   }
 
   Limit limit_at_point(const bigfloat &A) const {
-    Polynomial f = numerator_.change_expansion_point(A);
-    Polynomial g = denominator_.change_expansion_point(A);
+    Polynomial1D f = numerator_.change_expansion_point(A);
+    Polynomial1D g = denominator_.change_expansion_point(A);
 
     size_t k_f = f.zero_order();
     size_t k_g = g.zero_order();

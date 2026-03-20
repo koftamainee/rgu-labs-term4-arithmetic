@@ -1,30 +1,30 @@
 #include "bigmath/bigfloat.hpp"
-#include "polynomial.hpp"
+#include "Polynomial1D.hpp"
 #include "VectorBF.h"
 #include <iostream>
 #include <vector>
 
 class PolynomialOfPolynomials {
 private:
-  std::vector<Polynomial> coeffs_;
+  std::vector<Polynomial1D> coeffs_;
 
 public:
-  PolynomialOfPolynomials(const std::vector<Polynomial> &coeffs)
+  PolynomialOfPolynomials(const std::vector<Polynomial1D> &coeffs)
       : coeffs_(coeffs) {}
 
-  std::vector<Polynomial> initialize() const { return coeffs_; }
+  std::vector<Polynomial1D> initialize() const { return coeffs_; }
 
-  std::vector<Polynomial> horner_step(const bigfloat &x0) const {
+  std::vector<Polynomial1D> horner_step(const bigfloat &x0) const {
     size_t n = coeffs_.size();
     if (n == 0)
       return {};
 
-    std::vector<Polynomial> v = coeffs_;
+    std::vector<Polynomial1D> v = coeffs_;
 
     for (size_t k = 0; k < n; k++) {
       for (int j = static_cast<int>(n) - 1; j >= static_cast<int>(k); j--) {
         if (j < static_cast<int>(n) - 1) {
-          Polynomial shifted =
+          Polynomial1D shifted =
               v[j + 1].change_expansion_point(v[j + 1].expansion_point() + x0);
 
           VectorBF coeffs_j = v[j].coefficients();
@@ -40,7 +40,7 @@ public:
             new_coeffs[i] = c1 + c2;
           }
 
-          v[j] = Polynomial(new_coeffs, v[j].expansion_point());
+          v[j] = Polynomial1D(new_coeffs, v[j].expansion_point());
         }
       }
     }
@@ -48,8 +48,8 @@ public:
     return v;
   }
 
-  std::vector<Polynomial> compose_direct(const bigfloat &x0) const {
-    std::vector<Polynomial> result;
+  std::vector<Polynomial1D> compose_direct(const bigfloat &x0) const {
+    std::vector<Polynomial1D> result;
     result.reserve(coeffs_.size());
 
     for (const auto &poly : coeffs_) {
@@ -77,11 +77,11 @@ int main(void) {
   std::cout << "where each v_i is itself a polynomial in another variable\n";
   std::cout << "the program computes u(x + x0) using Horner scheme\n\n";
 
-  Polynomial v0(VectorBF({1, 1}), 0);
-  Polynomial v1(VectorBF({2, 3}), 0);
-  Polynomial v2(VectorBF({1, -1}), 0);
+  Polynomial1D v0(VectorBF({1, 1}), 0);
+  Polynomial1D v1(VectorBF({2, 3}), 0);
+  Polynomial1D v2(VectorBF({1, -1}), 0);
 
-  std::vector<Polynomial> coeffs = {v0, v1, v2};
+  std::vector<Polynomial1D> coeffs = {v0, v1, v2};
   PolynomialOfPolynomials poly_of_poly(coeffs);
 
   std::cout << "Original polynomial u(x) = v_0 + v_1*x + v_2·x^2\n";

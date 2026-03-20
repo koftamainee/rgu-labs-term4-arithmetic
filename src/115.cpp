@@ -1,7 +1,7 @@
 #include "bigmath/bigfloat.hpp"
 #include "composite_rational_function.hpp"
 #include "limit.hpp"
-#include "polynomial.hpp"
+#include "Polynomial1D.hpp"
 #include "VectorBF.h"
 #include <iostream>
 
@@ -26,10 +26,10 @@ int main() {
   VectorBF s2_coeffs = {0, 1};
   size_t l = 2;
 
-  Polynomial f1(f1_coeffs, 0);
-  Polynomial s1(s1_coeffs, 0);
-  Polynomial f2(f2_coeffs, 0);
-  Polynomial s2(s2_coeffs, 0);
+  Polynomial1D f1(f1_coeffs, 0);
+  Polynomial1D s1(s1_coeffs, 0);
+  Polynomial1D f2(f2_coeffs, 0);
+  Polynomial1D s2(s2_coeffs, 0);
 
   CompositeRationalFunction T1(f1, s1, k, f2, s2, l);
 
@@ -57,10 +57,10 @@ int main() {
   VectorBF s2_coeffs2 = {0, 0, 1};
   size_t l2 = 2;
 
-  Polynomial f1_2(f1_coeffs2, 0);
-  Polynomial s1_2(s1_coeffs2, 0);
-  Polynomial f2_2(f2_coeffs2, 0);
-  Polynomial s2_2(s2_coeffs2, 0);
+  Polynomial1D f1_2(f1_coeffs2, 0);
+  Polynomial1D s1_2(s1_coeffs2, 0);
+  Polynomial1D f2_2(f2_coeffs2, 0);
+  Polynomial1D s2_2(s2_coeffs2, 0);
 
   CompositeRationalFunction T2(f1_2, s1_2, k2, f2_2, s2_2, l2);
 
@@ -91,10 +91,10 @@ int main() {
   VectorBF s2_coeffs3 = {0, 1};
   size_t l3 = 1;
 
-  Polynomial f1_3(f1_coeffs3, 0);
-  Polynomial s1_3(s1_coeffs3, 0);
-  Polynomial f2_3(f2_coeffs3, 0);
-  Polynomial s2_3(s2_coeffs3, 0);
+  Polynomial1D f1_3(f1_coeffs3, 0);
+  Polynomial1D s1_3(s1_coeffs3, 0);
+  Polynomial1D f2_3(f2_coeffs3, 0);
+  Polynomial1D s2_3(s2_coeffs3, 0);
 
   CompositeRationalFunction T3(f1_3, s1_3, k3, f2_3, s2_3, l3);
 

@@ -84,7 +84,8 @@ void Polynomial<T>::set(const Monomial& m, const T& coeff) {
   }
   if (coeff == T{}) {
     m_terms.erase(m.exponents());
-  } else {
+  }
+  else {
     m_terms.insert(m.exponents(), coeff);
   }
 }
@@ -117,7 +118,8 @@ Polynomial<T>& Polynomial<T>::operator+=(const Polynomial& other) {
               : elem.value;
     if (val == T{}) {
       m_terms.erase(key);
-    } else {
+    }
+    else {
       m_terms.insert(key, std::move(val));
     }
   }
@@ -135,7 +137,8 @@ Polynomial<T>& Polynomial<T>::operator-=(const Polynomial& other) {
               : T{} - elem.value;
     if (val == T{}) {
       m_terms.erase(key);
-    } else {
+    }
+    else {
       m_terms.insert(key, std::move(val));
     }
   }
@@ -159,7 +162,8 @@ Polynomial<T>& Polynomial<T>::operator*=(const Polynomial& other) {
       }
       if (val == T{}) {
         result.m_terms.erase(key);
-      } else {
+      }
+      else {
         result.m_terms.insert(key, std::move(val));
       }
     }
@@ -192,24 +196,13 @@ Polynomial<T> Polynomial<T>::operator*(const Polynomial& other) const {
 template <typename T>
 bool Polynomial<T>::operator==(const Polynomial& other) const {
   check_compat(other);
-  if (m_terms.size() != other.m_terms.size()) {
-    return false;
-  }
-  for (const auto& elem : m_terms) {
-    auto it = other.m_terms.find(elem.key);
-    if (it == other.m_terms.cend()) {
-      return false;
-    }
-    if (it.value() != elem.value) {
-      return false;
-    }
-  }
-  return true;
+  return m_terms == other.m_terms;
 }
 
 template <typename T>
 bool Polynomial<T>::operator!=(const Polynomial& other) const {
-  return !(*this == other);
+  check_compat(other);
+  return m_terms != other.m_terms;
 }
 
 template <typename T>
@@ -234,11 +227,10 @@ T Polynomial<T>::evaluate(const point_type& point) const {
 
 template <typename T>
 T Polynomial<T>::horner_impl(
-    const typename Trie<key_type, T>::Node* node,
-    const point_type& point,
-    size_type var,
-    size_type n_vars)
-{
+  const typename Trie<key_type, T>::Node* node,
+  const point_type& point,
+  size_type var,
+  size_type n_vars) {
   if (!node) return T{};
   if (var == n_vars) {
     return node->value.value_or(T{});
@@ -279,7 +271,8 @@ std::optional<int> Polynomial<T>::homogeneous_degree() const {
     int d = total_degree(elem.key);
     if (!degree.has_value()) {
       degree = d;
-    } else if (degree.value() != d) {
+    }
+    else if (degree.value() != d) {
       return std::nullopt;
     }
   }
@@ -342,7 +335,8 @@ std::string to_latex(const Polynomial<T>& p) {
     bool negative = !needs_parens && !coeff_str.empty() && coeff_str[0] == '-';
     if (!first) {
       result += negative ? " - " : " + ";
-    } else if (negative) {
+    }
+    else if (negative) {
       result += "-";
     }
     first = false;

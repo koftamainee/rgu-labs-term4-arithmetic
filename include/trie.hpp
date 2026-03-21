@@ -180,7 +180,10 @@ public:
   const_iterator find(const key_type& key) const;
   bool contains(const key_type& key) const;
 
-  const Node *root() const noexcept;
+  const Node* root() const noexcept;
+
+  bool operator==(const Trie&) const;
+  bool operator!=(const Trie&) const;
 
 private:
   template <typename W>
@@ -325,6 +328,23 @@ bool Trie<Key, V>::contains(const key_type& key) const {
 template <typename Key, typename V>
 const typename Trie<Key, V>::Node* Trie<Key, V>::root() const noexcept {
   return m_root.get();
+}
+
+template <typename Key, typename V>
+bool Trie<Key, V>::operator==(const Trie& other) const {
+  if (m_size != other.m_size) return false;
+  auto it2 = other.cbegin();
+  for (const auto& elem : *this) {
+    if (elem.key != it2.key()) return false;
+    if (elem.value != it2.value()) return false;
+    ++it2;
+  }
+  return true;
+}
+
+template <typename Key, typename V>
+bool Trie<Key, V>::operator!=(const Trie& other) const {
+  return !(*this == other);
 }
 
 template <typename Key, typename V>

@@ -43,6 +43,8 @@ void poly_demo(chalkboard::Reporter& r) {
   q.set(make_mono({1, 1}), CQ{mpq_class(1), mpq_class(0)});
   q.set(make_mono({0, 0}), CQ{mpq_class(-1, 1), mpq_class(1, 3)});
 
+
+
   std::vector<CQ> B = {
     CQ{mpq_class(1), mpq_class(1)},
     CQ{mpq_class(0), mpq_class(-1)}

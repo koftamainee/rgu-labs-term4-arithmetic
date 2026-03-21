@@ -7,8 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "utils.hpp"
-
 template <typename T>
 class Matrix{
 public:
@@ -332,23 +330,6 @@ public:
     return result;
   }
 
-  std::string to_latex() const {
-    std::string result = "\\begin{pmatrix}";
-    for (size_type i = 0; i < m_rows; ++i) {
-      for (size_type j = 0; j < m_cols; ++j) {
-        result += to_str(m_data[i][j]);
-        if (j + 1 < m_cols) {
-          result += " & ";
-        }
-      }
-      if (i + 1 < m_rows) {
-        result += " \\\\ ";
-      }
-    }
-    result += "\\end{pmatrix}";
-    return result;
-  }
-
 private:
   void check_same_size(const Matrix& other, const std::string& op) const {
     if (m_rows != other.m_rows || m_cols != other.m_cols) {
@@ -366,3 +347,21 @@ private:
   size_type m_rows = 0;
   size_type m_cols = 0;
 };
+
+template<typename T>
+std::string to_latex(const Matrix<T>& m) {
+  std::string result = "\\begin{pmatrix}";
+  for (typename Matrix<T>::size_type i = 0; i < m.rows(); ++i) {
+    for (typename Matrix<T>::size_type j = 0; j < m.cols(); ++j) {
+      result += to_latex(m.at(i, j));
+      if (j + 1 < m.cols()) {
+        result += " & ";
+      }
+    }
+    if (i + 1 < m.rows()) {
+      result += " \\\\ ";
+    }
+  }
+  result += "\\end{pmatrix}";
+  return result;
+}

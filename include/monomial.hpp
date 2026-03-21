@@ -94,23 +94,24 @@ public:
         return !(*this < other);
     }
 
-    std::string to_latex() const {
-        std::string result;
-        for (size_type i = 0; i < m_exponents.size(); ++i) {
-            if (m_exponents[i] == 0) {
-                continue;
-            }
-            result += "x_{" + std::to_string(i + 1) + "}";
-            if (m_exponents[i] != 1) {
-                result += "^{" + std::to_string(m_exponents[i]) + "}";
-            }
-        }
-        if (result.empty()) {
-            return "1";
-        }
-        return result;
-    }
 
 private:
     container m_exponents;
 };
+
+inline std::string to_latex(const Monomial& m) {
+    std::string result;
+    for (Monomial::size_type i = 0; i < m.n_vars(); ++i) {
+        if (m[i] == 0) {
+            continue;
+        }
+        result += "x_{" + std::to_string(i + 1) + "}";
+        if (m[i] != 1) {
+            result += "^{" + std::to_string(m[i]) + "}";
+        }
+    }
+    if (result.empty()) {
+        return "1";
+    }
+    return result;
+}

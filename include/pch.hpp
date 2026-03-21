@@ -21,8 +21,8 @@
 
 #include <gmpxx.h>
 
-#include <chalkboard/latex_formatter.h>
+#include <latex_serializables.hpp>
+#include <polynomial.hpp>
+
 #include <chalkboard/reporter.h>
 #include <chalkboard/task.h>
-
-#include <gmp_formatter.hpp>

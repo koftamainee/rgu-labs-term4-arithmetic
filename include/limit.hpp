@@ -10,7 +10,7 @@ enum class LimitResult {
 };
 
 template <typename T>
-class Limit{
+class Limit {
 public:
   using value_type = T;
 
@@ -29,14 +29,15 @@ public:
     }
     return "unknown";
   }
-
-  std::string to_latex() const {
-    switch (result) {
-    case LimitResult::Finite: return value.to_decimal();
-    case LimitResult::PlusInfinity: return "+\\infty";
-    case LimitResult::MinusInfinity: return "-\\infty";
-    case LimitResult::DoesNotExist: return "\\nexists";
-    }
-    return "\\text{unknown}";
-  }
 };
+
+template <typename T>
+std::string to_latex(const Limit<T>& l) {
+  switch (l.result()) {
+  case LimitResult::Finite: return l.value().to_decimal();
+  case LimitResult::PlusInfinity: return "+\\infty";
+  case LimitResult::MinusInfinity: return "-\\infty";
+  case LimitResult::DoesNotExist: return "\\nexists";
+  default: return "\\text{unknown}";
+  }
+}

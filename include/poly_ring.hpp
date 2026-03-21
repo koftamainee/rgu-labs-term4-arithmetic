@@ -45,3 +45,13 @@ template <typename T>
 std::shared_ptr<const PolyRing<T>> make_ring(std::vector<std::string> var_names) {
   return std::make_shared<const PolyRing<T>>(std::move(var_names));
 }
+
+template<typename T>
+std::string to_latex(const PolyRing<T>& ring) {
+  std::string result = "[";
+  for (std::size_t i = 0; i < ring.n_vars(); ++i) {
+    if (i) { result += ", "; }
+    result += ring.var_name(i);
+  }
+  return result + "]";
+}

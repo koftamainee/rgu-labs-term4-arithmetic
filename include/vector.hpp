@@ -291,21 +291,6 @@ public:
     return result;
   }
 
-  std::string to_latex() const{
-    if (m_components.empty()) {
-      return "\\begin{pmatrix}\\end{pmatrix}";
-    }
-    std::string result = "\\begin{pmatrix}";
-    for (size_type i = 0; i < m_components.size(); ++i) {
-      result += to_str(m_components[i]);
-      if (i + 1 < m_components.size()) {
-        result += " \\\\ ";
-      }
-    }
-    result += "\\end{pmatrix}";
-    return result;
-  }
-
 private:
   void check_dimension(size_type expected, const std::string& op) const {
     if (dimension() != expected) {
@@ -321,3 +306,19 @@ private:
 
   std::vector<T> m_components;
 };
+
+template<typename T>
+std::string to_latex(const Vector<T>& v) {
+  if (v.empty()) {
+    return "\\begin{pmatrix}\\end{pmatrix}";
+  }
+  std::string result = "\\begin{pmatrix}";
+  for (typename Vector<T>::size_type i = 0; i < v.size(); ++i) {
+    result += to_latex(v.at(i));
+    if (i + 1 < v.size()) {
+      result += " \\\\ ";
+    }
+  }
+  result += "\\end{pmatrix}";
+  return result;
+}

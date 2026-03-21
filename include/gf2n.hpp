@@ -125,8 +125,10 @@ public:
     return a;
   }
 
-  Polynomial<int> to_polynomial(elem a) const {
-    auto ring = make_ring<int>({"x"});
+  Polynomial<int> to_polynomial(elem a, const std::shared_ptr<PolyRing<int>> &ring) const {
+    if (ring->n_vars() != 1) {
+      throw std::invalid_argument("Invalid ring for gf2n polynomial");
+    }
     Polynomial<int> p(ring);
     for (int i = 0; i <= m_n; ++i) {
       if ((a >> i) & 1) {

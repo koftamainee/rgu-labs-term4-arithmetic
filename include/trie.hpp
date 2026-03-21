@@ -14,12 +14,12 @@ public:
   using value_type = V;
   using size_type = std::size_t;
 
-private:
   struct Node {
     std::map<symbol_type, std::unique_ptr<Node>> children;
     std::optional<value_type> value;
   };
 
+private:
   template <bool IsConst>
   class basic_iterator {
     friend class Trie;
@@ -180,6 +180,8 @@ public:
   const_iterator find(const key_type& key) const;
   bool contains(const key_type& key) const;
 
+  const Node *root() const noexcept;
+
 private:
   template <typename W>
   iterator insert_impl(const key_type& key, W&& value, bool overwrite);
@@ -318,6 +320,11 @@ typename Trie<Key, V>::const_iterator Trie<Key, V>::find(const key_type& key) co
 template <typename Key, typename V>
 bool Trie<Key, V>::contains(const key_type& key) const {
   return find_node_ptr(key) != nullptr;
+}
+
+template <typename Key, typename V>
+const typename Trie<Key, V>::Node* Trie<Key, V>::root() const noexcept {
+  return m_root.get();
 }
 
 template <typename Key, typename V>

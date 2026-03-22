@@ -1,10 +1,11 @@
 #include <complex>
 #include <gmpxx.h>
 
-#include "polynomial.hpp"
-#include "zmod.hpp"
+#include "../include/algebra/polynomial/polynomial.hpp"
+#include "../include/algebra/zmod.hpp"
 #include <chalkboard/task.h>
 #include <chalkboard/latex_list.h>
+
 
 inline Monomial make_mono(std::initializer_list<int> exps) {
   return Monomial(Monomial::container(exps));

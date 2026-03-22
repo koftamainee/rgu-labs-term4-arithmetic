@@ -1,12 +1,9 @@
 #pragma once
 
 #include <algorithm>
-#include <cassert>
-#include <chrono>
 #include <cmath>
 #include <complex>
 #include <cstddef>
-#include <cstdint>
 #include <format>
 #include <functional>
 #include <iostream>
@@ -20,9 +17,5 @@
 #include <vector>
 
 #include <gmpxx.h>
-
-#include <latex_serializables.hpp>
-#include <polynomial.hpp>
-
-#include <chalkboard/reporter.h>
+#include <io/latex_serializables.hpp>
 #include <chalkboard/task.h>

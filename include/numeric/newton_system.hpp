@@ -5,8 +5,8 @@
 #include <functional>
 #include <vector>
 
-#include "vector.hpp"
-#include "matrix.hpp"
+#include "../primitives/vector.hpp"
+#include "../matrix.hpp"
 
 template <typename T>
 struct SystemResult {

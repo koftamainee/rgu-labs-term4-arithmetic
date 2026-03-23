@@ -15,7 +15,7 @@ public:
   using size_type = std::size_t;
 
   struct Node {
-    std::map<symbol_type, std::unique_ptr<Node>> children;
+    std::unordered_map<symbol_type, std::unique_ptr<Node>> children;
     std::optional<value_type> value;
   };
 
@@ -28,8 +28,8 @@ private:
     using value_ref = std::conditional_t<IsConst, const value_type&, value_type&>;
     using map_iterator = std::conditional_t<
       IsConst,
-      typename std::map<symbol_type, std::unique_ptr<Node>>::const_iterator,
-      typename std::map<symbol_type, std::unique_ptr<Node>>::iterator
+      typename std::unordered_map<symbol_type, std::unique_ptr<Node>>::const_iterator,
+      typename std::unordered_map<symbol_type, std::unique_ptr<Node>>::iterator
     >;
 
     struct Frame {
@@ -445,7 +445,7 @@ std::unique_ptr<typename Trie<Key, V>::Node> Trie<Key, V>::clone_impl(const Node
   struct Frame {
     const Node* source;
     Node* dest;
-    typename std::map<symbol_type, std::unique_ptr<Node>>::const_iterator it;
+    typename std::unordered_map<symbol_type, std::unique_ptr<Node>>::const_iterator it;
   };
 
   auto new_root = std::make_unique<Node>();

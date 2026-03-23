@@ -5,6 +5,7 @@
 #include "../include/algebra/zmod.hpp"
 #include <chalkboard/task.h>
 #include <chalkboard/latex_list.h>
+#include <algebra/polynomial/poly_ring_pool.hpp>
 
 
 inline Monomial make_mono(std::initializer_list<int> exps) {
@@ -19,6 +20,8 @@ void poly_demo(chalkboard::Reporter& r) {
   f.set(make_mono({1, 0, 1}), mpq_class(-2));
   f.set(make_mono({0, 3, 0}), mpq_class(1, 2));
   f.set(make_mono({0, 0, 0}), mpq_class(5, 3));
+
+
 
   Polynomial<mpq_class> g(Q3);
   g.set(make_mono({2, 1, 0}), mpq_class(1, 4));

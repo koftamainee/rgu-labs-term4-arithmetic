@@ -12,6 +12,7 @@ inline Monomial make_mono(const std::initializer_list<int> exps) {
 
 using Q = mpq_class;
 
+
 template <typename T>
 void show_lm_lt_multideg(chalkboard::Reporter& r,
                          const std::string& order_name,

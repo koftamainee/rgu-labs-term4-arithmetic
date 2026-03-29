@@ -1,8 +1,8 @@
 #include <complex>
 #include <gmpxx.h>
 
-#include "../include/algebra/polynomial/polynomial.hpp"
-#include "../include/algebra/zmod.hpp"
+#include "algebra/polynomial/polynomial.hpp"
+#include "algebra/zmod.hpp"
 #include <chalkboard/task.h>
 #include <chalkboard/latex_list.h>
 #include <algebra/polynomial/poly_ring_pool.hpp>

@@ -76,7 +76,7 @@ struct OrderTraits<Invlex> {
     static std::strong_ordering compare(const Monomial& a, const Monomial& b) {
         detail::check_compat(a, b);
         for (Monomial::size_type i = a.n_vars(); i-- > 0;) {
-            if (auto cmp = a[i] <=> b[i]; cmp != 0) {
+            if (const auto cmp = a[i] <=> b[i]; cmp != 0) {
                 return cmp;
             }
         }

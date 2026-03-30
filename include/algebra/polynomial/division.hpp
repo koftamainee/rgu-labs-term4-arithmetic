@@ -7,14 +7,13 @@
 #include "polynomial.hpp"
 
 namespace order {
-
   template <typename T>
   struct DivisionResult {
     std::vector<Polynomial<T>> quotients;
     Polynomial<T> remainder;
 
     explicit DivisionResult(typename Polynomial<T>::ring_ptr ring, std::size_t s)
-        : remainder(ring) {
+      : remainder(ring) {
       quotients.reserve(s);
       for (std::size_t i = 0; i < s; ++i) {
         quotients.emplace_back(ring);
@@ -24,9 +23,9 @@ namespace order {
 
   template <typename Order, typename T>
   DivisionResult<T> divide(const Polynomial<T>& f,
-                            const std::vector<Polynomial<T>>& divisors) {
-    const auto s   = divisors.size();
-    auto       ring = f.ring();
+                           const std::vector<Polynomial<T>>& divisors) {
+    const auto s = divisors.size();
+    auto ring = f.ring();
 
     DivisionResult<T> res(ring, s);
 
@@ -34,13 +33,13 @@ namespace order {
 
     while (!p.is_zero()) {
       Monomial lm_p = lm<Order>(p);
-      T        lc_p = lc<Order>(p);
+      T lc_p = lc<Order>(p);
 
       bool division_occurred = false;
 
       for (std::size_t i = 0; i < s; ++i) {
         const Monomial lm_fi = lm<Order>(divisors[i]);
-        const T        lc_fi = lc<Order>(divisors[i]);
+        const T lc_fi = lc<Order>(divisors[i]);
 
         if (!lm_fi.divides(lm_p)) {
           continue;
@@ -51,7 +50,7 @@ namespace order {
           quot_exp[j] = lm_p[j] - lm_fi[j];
         }
         Monomial quot_mono(quot_exp);
-        T        quot_coeff = lc_p / lc_fi;
+        T quot_coeff = lc_p / lc_fi;
 
         Polynomial<T> term(ring);
         term.set(quot_mono, quot_coeff);
@@ -74,5 +73,4 @@ namespace order {
 
     return res;
   }
-
 } // namespace order

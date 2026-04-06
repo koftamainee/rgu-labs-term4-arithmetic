@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "ordering.hpp"
-#include "monomial_order.hpp"
 #include "polynomial.hpp"
 
 namespace order {
@@ -12,7 +11,7 @@ namespace order {
     std::vector<Polynomial<T>> quotients;
     Polynomial<T> remainder;
 
-    explicit DivisionResult(typename Polynomial<T>::ring_ptr ring, std::size_t s)
+    explicit DivisionResult(Polynomial<T>::ring_ptr ring, std::size_t s)
       : remainder(ring) {
       quotients.reserve(s);
       for (std::size_t i = 0; i < s; ++i) {

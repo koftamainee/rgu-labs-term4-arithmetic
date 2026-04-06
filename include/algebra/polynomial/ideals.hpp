@@ -60,6 +60,7 @@ inline DivisionResult compute_division(
   f.set(make_mono2(dm, dn), 1.0);
 
   std::vector<Poly> divisors;
+  divisors.reserve(gens.size());
   for (const auto& g : gens)
     divisors.push_back(make_gen_poly(ring, g.a, g.b));
 
@@ -74,4 +75,45 @@ inline DivisionResult compute_division(
     out.quotient_strs.push_back(z ? "0" : to_latex(res.quotients[i]));
   }
   return out;
+}
+
+struct DivStep {
+  int m, n;
+  int gen_idx;
+  bool is_remainder;
+};
+
+struct DivAnim {
+  std::vector<DivStep> steps;
+  int current = -1;
+  double timer = 0.0;
+  double step_duration = 0.5;
+  bool playing = false;
+  std::vector<std::pair<int, int>> trail;
+};
+
+static DivAnim div_anim;
+
+static std::vector<DivStep> compute_div_steps(
+  const std::vector<Gen>& gens, int m0, int n0) {
+  std::vector<DivStep> steps;
+  int m = m0, n = n0;
+  for (int iter = 0; iter < 64; ++iter) {
+    bool divided = false;
+    for (int i = 0; i < static_cast<int>(gens.size()); ++i) {
+      if (m >= gens[i].a && n >= gens[i].b) {
+        steps.push_back({m, n, i, false});
+        m -= gens[i].a;
+        n -= gens[i].b;
+        divided = true;
+        break;
+      }
+    }
+    if (!divided) {
+      bool zero = (m == 0 && n == 0);
+      steps.push_back({m, n, -1, !zero});
+      break;
+    }
+  }
+  return steps;
 }

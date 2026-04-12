@@ -12,6 +12,22 @@
 #include <cstdio>
 #include <cmath>
 
+static bool is_generator(
+  const std::vector<Gen>& gens, int m, int n) {
+  for (const auto& g : gens) {
+    if (m > g.a && n > g.b) {
+      return false;
+    }
+    if (m == 0 && g.b == 0 && n > g.a) {
+      return false;
+    }
+    if (n == 0 && g.a == 0 && m > g.b) {
+      return false;
+    }
+  }
+  return true;
+}
+
 static void draw_grid(
   ImDrawList* dl,
   ImVec2 origin,
@@ -29,6 +45,9 @@ static void draw_grid(
   const ImU32 col_gen = IM_COL32(220, 60, 60, 255);
   const ImU32 col_gen_ring = IM_COL32(255, 255, 255, 200);
   const ImU32 col_label = IM_COL32(100, 100, 100, 200);
+  const ImU32 col_gen_cell = IM_COL32(220, 60, 60, 255);
+  const ImU32 col_ideal_other = IM_COL32(120, 160, 220, 200);
+  const ImU32 col_nonideal = IM_COL32(92, 92, 92, 255);
   const ImU32 col_axis = IM_COL32(80, 80, 80, 180);
   const ImU32 col_trail = IM_COL32(255, 200, 60, 80);
 
@@ -145,8 +164,14 @@ static void draw_grid(
     if (g.a > N || g.b > N) continue;
     float cx = origin.x + static_cast<float>(g.a) * cell + cell * 0.5f;
     float cy = origin.y - static_cast<float>(g.b) * cell - cell * 0.5f;
-    dl->AddCircleFilled(ImVec2(cx, cy), 7.0f, col_gen);
-    dl->AddCircle(ImVec2(cx, cy), 9.0f, col_gen_ring, 0, 1.5f);
+    if (is_generator(gens, g.a, g.b)) {
+      dl->AddCircleFilled(ImVec2(cx, cy), 7.0f, col_gen);
+      dl->AddCircle(ImVec2(cx, cy), 9.0f, col_gen_ring, 0, 1.5f);
+    }
+    else {
+      dl->AddCircleFilled(ImVec2(cx, cy), 7.0f, col_hover);
+      dl->AddCircle(ImVec2(cx, cy), 9.0f, col_gen_ring, 0, 1.5f);
+    }
   }
 }
 

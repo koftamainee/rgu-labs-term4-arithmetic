@@ -14,7 +14,7 @@ Monomial lcm_monomial(const Monomial& a, const Monomial& b) {
     throw std::invalid_argument("lcm_monomial: n_vars mismatch");
   }
   Monomial::container exp(a.n_vars());
-  for (Monomial::size_type i = 0; i < a.n_vars(); ++i) {
+  for (Monomial::size_type i = 0; i < a.n_vars(); i++) {
     exp[i] = std::max(a[i], b[i]);
   }
   return Monomial(exp);
@@ -33,7 +33,7 @@ Polynomial<T> s_polynomial(const Polynomial<T>& f, const Polynomial<T>& g) {
 
   Monomial::container exp_f(ring->n_vars());
   Monomial::container exp_g(ring->n_vars());
-  for (Monomial::size_type i = 0; i < ring->n_vars(); ++i) {
+  for (Monomial::size_type i = 0; i < ring->n_vars(); i++) {
     exp_f[i] = gamma[i] - lm_f[i];
     exp_g[i] = gamma[i] - lm_g[i];
   }
@@ -49,13 +49,59 @@ Polynomial<T> s_polynomial(const Polynomial<T>& f, const Polynomial<T>& g) {
 
 template <typename Order, typename T>
 bool is_groebner_basis(const std::vector<Polynomial<T>>& basis) {
-  for (std::size_t i = 0; i < basis.size(); ++i) {
-    for (std::size_t j = i + 1; j < basis.size(); ++j) {
+  for (std::size_t i = 0; i < basis.size(); i++) {
+    for (std::size_t j = i + 1; j < basis.size(); j++) {
       const Polynomial<T> s = s_polynomial<Order>(basis[i], basis[j]);
-      if (s.is_zero()) continue;
+      if (s.is_zero()) {
+        continue;
+      }
       const auto res = order::divide<Order>(s, basis);
-      if (!res.remainder.is_zero()) return false;
+      if (!res.remainder.is_zero()) {
+        return false;
+      }
     }
   }
   return true;
+}
+
+template <typename Order, typename T>
+std::vector<Polynomial<T>> buchberger(std::vector<Polynomial<T>> generators) {
+  std::vector<Polynomial<T>> basis = std::move(generators);
+
+  bool changed = true;
+  while (changed) {
+    changed = false;
+    std::size_t n = basis.size();
+    for (std::size_t i = 0; i < n; i++) {
+      for (std::size_t j = i + 1; j < n; j++) {
+        const Monomial lm_i = order::lm<Order>(basis[i]);
+        const Monomial lm_j = order::lm<Order>(basis[j]);
+        const Monomial gamma = lcm_monomial<Order, T>(lm_i, lm_j);
+
+        bool coprime = true;
+        for (Monomial::size_type k = 0; k < gamma.n_vars(); k++) {
+          if (gamma[k] != lm_i[k] + lm_j[k]) {
+            coprime = false;
+            break;
+          }
+        }
+        if (coprime) {
+          continue;
+        }
+
+        const Polynomial<T> s = s_polynomial<Order>(basis[i], basis[j]);
+        if (s.is_zero()) {
+          continue;
+        }
+
+        const auto res = order::divide<Order>(s, basis);
+        if (!res.remainder.is_zero()) {
+          basis.push_back(res.remainder);
+          changed = true;
+        }
+      }
+    }
+  }
+
+  return basis;
 }

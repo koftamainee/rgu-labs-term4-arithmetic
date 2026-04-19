@@ -86,3 +86,54 @@ std::vector<Polynomial<T>> buchberger(std::vector<Polynomial<T>> generators) {
   }
   return basis;
 }
+
+template <typename Order, typename T>
+std::vector<Polynomial<T>> minimal_basis(std::vector<Polynomial<T>> basis) {
+  for (auto& p : basis) {
+    const T lc = order::lc<Order>(p);
+    Polynomial<T> scalar(p.ring());
+    scalar.set(Monomial(p.ring()->n_vars()), T(1) / lc);
+    p = scalar * p;
+  }
+
+  bool changed = true;
+  while (changed) {
+    changed = false;
+    for (std::size_t i = 0; i < basis.size(); i++) {
+      const Monomial lm_i = order::lm<Order>(basis[i]);
+      for (std::size_t j = 0; j < basis.size(); j++) {
+        if (i == j) continue;
+        const Monomial lm_j = order::lm<Order>(basis[j]);
+        if (lm_j.divides(lm_i)) {
+          basis.erase(basis.begin() + i);
+          changed = true;
+          break;
+        }
+      }
+      if (changed) break;
+    }
+  }
+
+  return basis;
+}
+
+template <typename Order, typename T>
+std::vector<Polynomial<T>> reduced_basis(std::vector<Polynomial<T>> basis) {
+  basis = minimal_basis<Order>(basis);
+
+  for (std::size_t i = 0; i < basis.size(); i++) {
+    std::vector<Polynomial<T>> others;
+    for (std::size_t j = 0; j < basis.size(); j++) {
+      if (j != i) others.push_back(basis[j]);
+    }
+    const auto res = order::divide<Order>(basis[i], others);
+    basis[i] = res.remainder;
+  }
+
+  return basis;
+}
+
+template <typename Order, typename T>
+std::vector<Polynomial<T>> groebner_basis(std::vector<Polynomial<T>> generators) {
+  return reduced_basis<Order>(buchberger<Order>(std::move(generators)));
+}

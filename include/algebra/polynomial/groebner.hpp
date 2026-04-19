@@ -67,34 +67,16 @@ bool is_groebner_basis(const std::vector<Polynomial<T>>& basis) {
 template <typename Order, typename T>
 std::vector<Polynomial<T>> buchberger(std::vector<Polynomial<T>> generators) {
   std::vector<Polynomial<T>> basis = std::move(generators);
-
   bool changed = true;
   while (changed) {
     changed = false;
-    std::size_t n = basis.size();
-    for (std::size_t i = 0; i < n; i++) {
-      for (std::size_t j = i + 1; j < n; j++) {
-        const Monomial lm_i = order::lm<Order>(basis[i]);
-        const Monomial lm_j = order::lm<Order>(basis[j]);
-        const Monomial gamma = lcm_monomial<Order, T>(lm_i, lm_j);
+    const std::vector<Polynomial<T>> snapshot = basis;
+    for (std::size_t i = 0; i < snapshot.size(); i++) {
+      for (std::size_t j = i + 1; j < snapshot.size(); j++) {
+        const Polynomial<T> s = s_polynomial<Order>(snapshot[i], snapshot[j]);
+        if (s.is_zero()) { continue; }
 
-        bool coprime = true;
-        for (Monomial::size_type k = 0; k < gamma.n_vars(); k++) {
-          if (gamma[k] != lm_i[k] + lm_j[k]) {
-            coprime = false;
-            break;
-          }
-        }
-        if (coprime) {
-          continue;
-        }
-
-        const Polynomial<T> s = s_polynomial<Order>(basis[i], basis[j]);
-        if (s.is_zero()) {
-          continue;
-        }
-
-        const auto res = order::divide<Order>(s, basis);
+        const auto res = order::divide<Order>(s, snapshot);
         if (!res.remainder.is_zero()) {
           basis.push_back(res.remainder);
           changed = true;
@@ -102,6 +84,5 @@ std::vector<Polynomial<T>> buchberger(std::vector<Polynomial<T>> generators) {
       }
     }
   }
-
   return basis;
 }

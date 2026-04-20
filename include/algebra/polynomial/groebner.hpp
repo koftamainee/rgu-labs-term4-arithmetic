@@ -87,7 +87,7 @@ std::vector<Polynomial<T>> buchberger(std::vector<Polynomial<T>> generators) {
   return basis;
 }
 
-template <typename Order, typename T>
+template <order::MonomialOrder Order, typename T>
 std::vector<Polynomial<T>> minimal_basis(std::vector<Polynomial<T>> basis) {
   for (auto& p : basis) {
     const T lc = order::lc<Order>(p);
@@ -117,7 +117,7 @@ std::vector<Polynomial<T>> minimal_basis(std::vector<Polynomial<T>> basis) {
   return basis;
 }
 
-template <typename Order, typename T>
+template <order::MonomialOrder Order, typename T>
 std::vector<Polynomial<T>> reduced_basis(std::vector<Polynomial<T>> basis) {
   basis = minimal_basis<Order>(basis);
 
@@ -133,7 +133,7 @@ std::vector<Polynomial<T>> reduced_basis(std::vector<Polynomial<T>> basis) {
   return basis;
 }
 
-template <typename Order, typename T>
+template <order::MonomialOrder Order, typename T>
 std::vector<Polynomial<T>> groebner_basis(std::vector<Polynomial<T>> generators) {
   return reduced_basis<Order>(buchberger<Order>(std::move(generators)));
 }

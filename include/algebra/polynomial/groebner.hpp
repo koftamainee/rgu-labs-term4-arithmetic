@@ -2,13 +2,13 @@
 
 #include "algebra/polynomial/division.hpp"
 #include "algebra/polynomial/monomial.hpp"
-#include "algebra/polynomial/monomial_order.hpp"
 #include "algebra/polynomial/ordering.hpp"
+#include "algebra/polynomial/monomial_order.hpp"
 #include "algebra/polynomial/polynomial.hpp"
 
 #include <vector>
 
-template <typename Order, typename T>
+template <typename T>
 Monomial lcm_monomial(const Monomial& a, const Monomial& b) {
   if (a.n_vars() != b.n_vars()) {
     throw std::invalid_argument("lcm_monomial: n_vars mismatch");
@@ -20,7 +20,7 @@ Monomial lcm_monomial(const Monomial& a, const Monomial& b) {
   return Monomial(exp);
 }
 
-template <typename Order, typename T>
+template <order::MonomialOrder Order, typename T>
 Polynomial<T> s_polynomial(const Polynomial<T>& f, const Polynomial<T>& g) {
   auto ring = f.ring();
 
@@ -47,7 +47,7 @@ Polynomial<T> s_polynomial(const Polynomial<T>& f, const Polynomial<T>& g) {
   return term_f * f - term_g * g;
 }
 
-template <typename Order, typename T>
+template <order::MonomialOrder Order, typename T>
 bool is_groebner_basis(const std::vector<Polynomial<T>>& basis) {
   for (std::size_t i = 0; i < basis.size(); i++) {
     for (std::size_t j = i + 1; j < basis.size(); j++) {
@@ -64,7 +64,7 @@ bool is_groebner_basis(const std::vector<Polynomial<T>>& basis) {
   return true;
 }
 
-template <typename Order, typename T>
+template <order::MonomialOrder Order, typename T>
 std::vector<Polynomial<T>> buchberger(std::vector<Polynomial<T>> generators) {
   std::vector<Polynomial<T>> basis = std::move(generators);
   bool changed = true;

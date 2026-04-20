@@ -6,7 +6,7 @@
 #include "polynomial.hpp"
 
 namespace order {
-  template <typename Order, typename T>
+  template <MonomialOrder Order, typename T>
   Monomial lm(const Polynomial<T>& f) {
     if (f.is_zero()) {
       throw std::domain_error("lm: polynomial is zero");
@@ -20,12 +20,12 @@ namespace order {
     return *best;
   }
 
-  template <typename Order, typename T>
+  template <MonomialOrder Order, typename T>
   Monomial multideg(const Polynomial<T>& f) {
     return lm<Order>(f);
   }
 
-  template <typename Order, typename T>
+  template <MonomialOrder Order, typename T>
   T lc(const Polynomial<T>& f) {
     if (f.is_zero()) {
       throw std::domain_error("lc: polynomial is zero");
@@ -34,7 +34,7 @@ namespace order {
     return *f.get(m);
   }
 
-  template <typename Order, typename T>
+  template <MonomialOrder Order, typename T>
   Polynomial<T> lt(const Polynomial<T>& f) {
     if (f.is_zero()) {
       throw std::domain_error("lt: polynomial is zero");

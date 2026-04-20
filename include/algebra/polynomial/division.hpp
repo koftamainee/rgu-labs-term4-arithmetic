@@ -20,7 +20,7 @@ namespace order {
     }
   };
 
-  template <typename Order, typename T>
+  template <MonomialOrder Order, typename T>
   DivisionResult<T> divide(const Polynomial<T>& f,
                            const std::vector<Polynomial<T>>& divisors) {
     const auto s = divisors.size();

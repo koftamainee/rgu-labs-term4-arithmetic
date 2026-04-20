@@ -29,7 +29,7 @@ Polynomial<T> s_polynomial(const Polynomial<T>& f, const Polynomial<T>& g) {
   const T lc_f = order::lc<Order>(f);
   const T lc_g = order::lc<Order>(g);
 
-  const Monomial gamma = lcm_monomial<Order, T>(lm_f, lm_g);
+  const Monomial gamma = lcm_monomial<T>(lm_f, lm_g);
 
   Monomial::container exp_f(ring->n_vars());
   Monomial::container exp_g(ring->n_vars());

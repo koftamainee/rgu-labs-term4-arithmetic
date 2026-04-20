@@ -95,16 +95,28 @@ void groebner_tasks(chalkboard::Reporter& r) {
            r.math("f_2"), f2,
            r.math("f_3"), f3);
 
-    auto gb = groebner_basis<order::Grlex>(gens);
 
-    r.subsection("Groebner basis G (grlex, x < y < z)");
-    {
+    auto gb = buchberger<order::Grlex>(gens);
+
+    auto print_basis = [&]() {
       auto lst = chalkboard::LatexList::enumerate();
       for (std::size_t i = 0; i < gb.size(); i++) {
         lst.item("{} = {}", r.math("g_{" + std::to_string(i + 1) + "}"), gb[i]);
       }
       r.add(lst);
-    }
+    };
+
+    r.subsection("Groebner basis G (grlex, x < y < z)");
+    print_basis();
+
+    gb = minimal_basis<order::Grlex>(gb);
+
+    r.subsection("Minimal Groebner basis G (grlex, x < y < z)");
+    print_basis();
+
+    gb = reduced_basis<order::Grlex>(gb);
+    r.subsection("Reduced Groebner basis G (grlex, x < y < z)");
+    print_basis();
   }
 }
 

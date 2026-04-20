@@ -118,22 +118,20 @@ std::vector<Polynomial<T>> minimal_basis(std::vector<Polynomial<T>> basis) {
 }
 
 template <order::MonomialOrder Order, typename T>
-std::vector<Polynomial<T>> reduced_basis(std::vector<Polynomial<T>> basis) {
-  basis = minimal_basis<Order>(basis);
-
-  for (std::size_t i = 0; i < basis.size(); i++) {
+std::vector<Polynomial<T>> reduced_basis(std::vector<Polynomial<T>> minimal_basis) {
+  for (std::size_t i = 0; i < minimal_basis.size(); i++) {
     std::vector<Polynomial<T>> others;
-    for (std::size_t j = 0; j < basis.size(); j++) {
-      if (j != i) others.push_back(basis[j]);
+    for (std::size_t j = 0; j < minimal_basis.size(); j++) {
+      if (j != i) others.push_back(minimal_basis[j]);
     }
-    const auto res = order::divide<Order>(basis[i], others);
-    basis[i] = res.remainder;
+    const auto res = order::divide<Order>(minimal_basis[i], others);
+    minimal_basis[i] = res.remainder;
   }
 
-  return basis;
+  return minimal_basis;
 }
 
 template <order::MonomialOrder Order, typename T>
 std::vector<Polynomial<T>> groebner_basis(std::vector<Polynomial<T>> generators) {
-  return reduced_basis<Order>(buchberger<Order>(std::move(generators)));
+  return reduced_basis<Order>(minimal_basis<Order>(buchberger<Order>(std::move(generators))));
 }
